@@ -2,8 +2,9 @@ import { motion } from "framer-motion";
 
 const toolCards = [
   { cls: "compartment-ixd glow-ixd", label: "TOOLS — IXD", labelColor: "text-ixd", tools: "Figma, Framer, Principle, Adobe XD, ProtoPie" },
-  { cls: "compartment-3d glow-3d", label: "TOOLS — 3D", labelColor: "text-three-d", tools: "Blender, ZBrush, Substance Painter, Cinema 4D, Maya" },
+  { cls: "compartment-3d glow-3d", label: "TOOLS — 3D", labelColor: "text-three-d", tools: "Blender, ZBrush, Substance Painter, Cinema 4D, 3D Printing" },
   { cls: "compartment-game glow-game", label: "TOOLS — GAME", labelColor: "text-game", tools: "Unreal Engine, Unity, Godot, Game Maker" },
+  { cls: "glass-panel", label: "HARDWARE & TINKERING", labelColor: "text-muted-foreground", tools: "ESP32, Raspberry Pi, 3D Printers, Custom PCB Design" },
 ];
 
 const AboutSection = () => {
@@ -20,15 +21,22 @@ const AboutSection = () => {
             // ABOUT
           </span>
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-8">
-            Designer across<br />dimensions
+            Eli Birdsall
           </h2>
           <p className="text-muted-foreground leading-relaxed mb-6">
-            I work at the intersection of interaction design, 3D visualization, and game development — 
-            creating experiences that blur the line between functional interfaces and immersive worlds.
+            With 8+ years in design, I work across the full spectrum — from interaction design and 3D visualization
+            to game development and hardware tinkering. I run a small print-to-order specialty service that has
+            sharpened my craft as a 3D artist, and I'm constantly building projects that span communication tools,
+            ESP32/Raspberry Pi devices, and immersive game worlds.
+          </p>
+          <p className="text-muted-foreground leading-relaxed mb-6">
+            Currently working on two titles under NDA: a classic cyberpunk multi-world game delivering a
+            cinematic experience that will blow players' minds, and a mini game designed to elevate the
+            social experience online.
           </p>
           <p className="text-muted-foreground leading-relaxed">
-            Each discipline informs the others: game mechanics sharpen my UX thinking, 
-            3D skills add depth to interfaces, and interaction design brings polish to game experiences.
+            I'm a tinkerer and inventor at heart — every discipline informs the others. Game mechanics sharpen my
+            UX thinking, 3D skills add depth to interfaces, and interaction design brings polish to everything I touch.
           </p>
         </motion.div>
 
