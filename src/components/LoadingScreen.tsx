@@ -47,37 +47,33 @@ function CameraRig({ progress }: { progress: number }) {
 function getTextParticles(text: string, count: number): Float32Array {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d")!;
-  canvas.width = 4096;
-  canvas.height = 1024;
+  // Ultra-high resolution canvas for maximum sampling fidelity
+  canvas.width = 6144;
+  canvas.height = 1536;
 
-  // Use Futura-like font stack with geometric sans fallbacks
   ctx.fillStyle = "white";
-  ctx.font = "600 360px 'Jost', 'Futura', 'Century Gothic', sans-serif";
+  ctx.font = "600 480px 'Jost', 'Futura', 'Century Gothic', sans-serif";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  
-  // Render with sub-pixel precision — draw twice for density
   ctx.fillText(text, canvas.width / 2, canvas.height / 2);
 
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  const pixels: [number, number, number][] = []; // x, y, brightness
+  const pixels: [number, number][] = [];
 
-  // Very dense sampling (every pixel) for maximum crispness
+  // Sample every pixel for absolute crispness
   for (let y = 0; y < canvas.height; y += 1) {
     for (let x = 0; x < canvas.width; x += 1) {
       const i = (y * canvas.width + x) * 4;
-      const alpha = imageData.data[i + 3];
-      if (alpha > 60) {
+      if (imageData.data[i + 3] > 100) {
         pixels.push([
-          (x - canvas.width / 2) * 0.003,
-          -(y - canvas.height / 2) * 0.003,
-          alpha / 255, // store brightness for edge weighting
+          (x - canvas.width / 2) * 0.002,
+          -(y - canvas.height / 2) * 0.002,
         ]);
       }
     }
   }
 
-  // Shuffle for even distribution
+  // Shuffle
   for (let i = pixels.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [pixels[i], pixels[j]] = [pixels[j], pixels[i]];
@@ -88,12 +84,12 @@ function getTextParticles(text: string, count: number): Float32Array {
     const idx = i % pixels.length;
     positions[i * 3] = pixels[idx][0];
     positions[i * 3 + 1] = pixels[idx][1];
-    positions[i * 3 + 2] = (Math.random() - 0.5) * 0.01; // Tighter z for flatter, crisper text
+    positions[i * 3 + 2] = 0; // Perfectly flat — zero z-spread
   }
   return positions;
 }
 
-const PARTICLE_COUNT = 35000;
+const PARTICLE_COUNT = 50000;
 
 function ParticleSystem({ progress }: { progress: number }) {
   const pointsRef = useRef<THREE.Points>(null!);
@@ -124,7 +120,7 @@ function ParticleSystem({ progress }: { progress: number }) {
   const sizes = useMemo(() => {
     const s = new Float32Array(PARTICLE_COUNT);
     for (let i = 0; i < PARTICLE_COUNT; i++) {
-      s[i] = Math.random() * 0.6 + 0.2;
+      s[i] = Math.random() * 0.3 + 0.15; // Tiny uniform dots
     }
     return s;
   }, []);
@@ -150,9 +146,9 @@ function ParticleSystem({ progress }: { progress: number }) {
         void main() {
           vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
           float dist = length(position.xy);
-          vAlpha = smoothstep(0.0, 0.3, uProgress) * (0.6 + 0.4 * sin(uTime * 2.0 + dist * 0.5));
+          vAlpha = smoothstep(0.0, 0.2, uProgress) * (0.8 + 0.2 * sin(uTime * 2.0 + dist * 0.5));
           vColorMix = sin(position.x * 0.3 + uTime) * 0.5 + 0.5;
-          gl_PointSize = aSize * uPixelRatio * (1.0 + 0.15 * sin(uTime * 3.0 + dist)) * (200.0 / -mvPosition.z);
+          gl_PointSize = aSize * uPixelRatio * (1.0 + 0.05 * sin(uTime * 3.0 + dist)) * (160.0 / -mvPosition.z);
           gl_Position = projectionMatrix * mvPosition;
         }
       `,
@@ -165,14 +161,12 @@ function ParticleSystem({ progress }: { progress: number }) {
 
         void main() {
           float d = length(gl_PointCoord - vec2(0.5));
-          if (d > 0.5) discard;
-          // Sharp circular particle with crisp edge
-          float alpha = smoothstep(0.5, 0.35, d) * vAlpha;
+          if (d > 0.45) discard;
+          // Hard-edged dot — no soft falloff
+          float alpha = step(d, 0.4) * vAlpha;
           vec3 color = mix(uColor1, uColor2, vColorMix);
           color = mix(color, uColor3, smoothstep(0.7, 1.0, vColorMix));
-          // Tiny bright core, no heavy glow
-          float core = smoothstep(0.3, 0.0, d) * 0.2;
-          gl_FragColor = vec4(color + core, alpha);
+          gl_FragColor = vec4(color, alpha);
         }
       `,
       transparent: true,
@@ -267,9 +261,9 @@ const LoadingScreen = ({ isLoading }: LoadingScreenProps) => {
             <ParticleSystem progress={progress} />
             <EffectComposer>
               <Bloom
-                intensity={0.2}
-                luminanceThreshold={0.5}
-                luminanceSmoothing={0.3}
+                intensity={0.1}
+                luminanceThreshold={0.7}
+                luminanceSmoothing={0.2}
                 mipmapBlur
               />
             </EffectComposer>
