@@ -20,7 +20,7 @@ const Blog = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
+      
       <div className="pt-14">
         <section className="py-32 px-6">
           <div className="max-w-4xl mx-auto">

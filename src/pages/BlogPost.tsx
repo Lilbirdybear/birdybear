@@ -37,7 +37,7 @@ const BlogPost = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
+      
       <div className="pt-14">
         <motion.article
           className="max-w-3xl mx-auto px-6 py-16"
