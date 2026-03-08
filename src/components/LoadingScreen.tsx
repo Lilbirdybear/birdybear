@@ -245,7 +245,7 @@ const LoadingScreen = ({ isLoading }: LoadingScreenProps) => {
           className="fixed inset-0 z-[100]"
           style={{ background: "hsl(var(--background))" }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+          transition={{ duration: 1.4, ease: [0.23, 1, 0.32, 1] }}
         >
           <Canvas
             camera={{ position: [0, 0, 14], fov: 50 }}
