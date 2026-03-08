@@ -299,7 +299,7 @@ const LoadingScreen = ({ isLoading }: LoadingScreenProps) => {
   useEffect(() => {
     if (!isLoading) return;
     const start = Date.now();
-    const duration = 2400;
+    const duration = 3400;
     const tick = () => {
       const elapsed = Date.now() - start;
       const p = Math.min(elapsed / duration, 1);
