@@ -6,6 +6,7 @@ import Magnetic from "./Magnetic";
 const LogoCube = lazy(() => import("./LogoCube"));
 
 const navLinks = [
+  { label: "Home", href: "/", isHash: false },
   { label: "Work", href: "/#compartments", isHash: true },
   { label: "Projects", href: "/#projects", isHash: true },
   { label: "Blog", href: "/blog", isHash: false },
