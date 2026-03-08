@@ -44,10 +44,9 @@ function CameraRig({ progress }: { progress: number }) {
 }
 
 // Generate particle positions that form text
-function getTextParticles(text: string, count: number): Float32Array {
+function getTextParticles(text: string, count: number): { positions: Float32Array; depths: Float32Array } {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d")!;
-  // Ultra-high resolution canvas for maximum sampling fidelity
   canvas.width = 6144;
   canvas.height = 1536;
 
@@ -58,35 +57,42 @@ function getTextParticles(text: string, count: number): Float32Array {
   ctx.fillText(text, canvas.width / 2, canvas.height / 2);
 
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  const pixels: [number, number][] = [];
+  const pixels: [number, number, number][] = []; // x, y, alpha
 
-  // Sample every pixel for absolute crispness
   for (let y = 0; y < canvas.height; y += 1) {
     for (let x = 0; x < canvas.width; x += 1) {
       const i = (y * canvas.width + x) * 4;
-      if (imageData.data[i + 3] > 100) {
+      const alpha = imageData.data[i + 3];
+      if (alpha > 100) {
         pixels.push([
           (x - canvas.width / 2) * 0.002,
           -(y - canvas.height / 2) * 0.002,
+          alpha / 255,
         ]);
       }
     }
   }
 
-  // Shuffle
   for (let i = pixels.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [pixels[i], pixels[j]] = [pixels[j], pixels[i]];
   }
 
+  const EXTRUDE_DEPTH = 0.35; // 3D extrusion depth
+  const LAYERS = 6; // number of depth layers
+
   const positions = new Float32Array(count * 3);
+  const depths = new Float32Array(count); // 0 = front face, 1 = back face
   for (let i = 0; i < count; i++) {
     const idx = i % pixels.length;
+    const layer = Math.floor(Math.random() * LAYERS);
+    const depthT = layer / (LAYERS - 1); // 0 to 1
     positions[i * 3] = pixels[idx][0];
     positions[i * 3 + 1] = pixels[idx][1];
-    positions[i * 3 + 2] = 0; // Perfectly flat — zero z-spread
+    positions[i * 3 + 2] = -depthT * EXTRUDE_DEPTH; // extrude backward
+    depths[i] = depthT;
   }
-  return positions;
+  return { positions, depths };
 }
 
 const PARTICLE_COUNT = 40000;
