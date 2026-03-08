@@ -11,6 +11,7 @@ import CursorGlow from "@/components/CursorGlow";
 import ScrollProgress from "@/components/ScrollProgress";
 import LoadingScreen from "@/components/LoadingScreen";
 import Index from "./pages/Index";
+import About from "./pages/About";
 import Admin from "./pages/Admin";
 import AdminLogin from "./pages/AdminLogin";
 import Blog from "./pages/Blog";
@@ -47,6 +48,7 @@ const AnimatedRoutes = () => {
       >
         <Routes location={location}>
           <Route path="/" element={<Index />} />
+          <Route path="/about" element={<About />} />
           <Route path="/project/:slug" element={<ProjectDetail />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
