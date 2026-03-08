@@ -70,13 +70,37 @@ const CursorGlow = () => {
 
       {/* Dot cursor */}
       <motion.div
-        className="fixed pointer-events-none z-[10000] w-1.5 h-1.5 rounded-full bg-primary"
+        className="fixed pointer-events-none z-[10000] rounded-full"
         style={{
-          left: pos.x - 3,
-          top: pos.y - 3,
+          left: pos.x,
+          top: pos.y,
+          translateX: "-50%",
+          translateY: "-50%",
+          width: hovering ? 16 : 8,
+          height: hovering ? 16 : 8,
           opacity: visible ? 1 : 0,
-          scale: hovering ? 2.5 : 1,
-          transition: "scale 0.3s cubic-bezier(0.23,1,0.32,1), opacity 0.2s",
+          transition: "width 0.25s cubic-bezier(0.23,1,0.32,1), height 0.25s cubic-bezier(0.23,1,0.32,1), opacity 0.2s, box-shadow 0.25s",
+          background: hovering
+            ? "hsl(var(--primary))"
+            : "radial-gradient(circle, hsl(var(--primary)), hsl(var(--primary) / 0.6))",
+          boxShadow: hovering
+            ? "0 0 12px 4px hsl(var(--primary) / 0.5), 0 0 4px 1px hsl(var(--primary) / 0.8)"
+            : "0 0 6px 2px hsl(var(--primary) / 0.4)",
+        }}
+      />
+
+      {/* Outer ring */}
+      <motion.div
+        className="fixed pointer-events-none z-[9999] rounded-full border border-primary/40"
+        style={{
+          x: springX,
+          y: springY,
+          translateX: "-50%",
+          translateY: "-50%",
+          width: hovering ? 40 : 24,
+          height: hovering ? 40 : 24,
+          opacity: visible ? 0.6 : 0,
+          transition: "width 0.35s cubic-bezier(0.23,1,0.32,1), height 0.35s cubic-bezier(0.23,1,0.32,1), opacity 0.2s",
         }}
       />
     </>
