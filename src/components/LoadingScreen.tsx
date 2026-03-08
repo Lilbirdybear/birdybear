@@ -101,13 +101,12 @@ function ParticleSystem({ progress }: { progress: number }) {
   const pointsRef = useRef<THREE.Points>(null!);
   const materialRef = useRef<THREE.ShaderMaterial>(null!);
 
-  const { targetPositions, initialPositions, randomVelocities } = useMemo(() => {
-    const target = getTextParticles("The Eli Design", PARTICLE_COUNT);
+  const { targetPositions, targetDepths, initialPositions, randomVelocities } = useMemo(() => {
+    const { positions: target, depths } = getTextParticles("The Eli Design", PARTICLE_COUNT);
     const initial = new Float32Array(PARTICLE_COUNT * 3);
     const velocities = new Float32Array(PARTICLE_COUNT * 3);
 
     for (let i = 0; i < PARTICLE_COUNT; i++) {
-      // Start scattered in a sphere
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
       const r = 4 + Math.random() * 8;
@@ -119,14 +118,14 @@ function ParticleSystem({ progress }: { progress: number }) {
       velocities[i * 3 + 1] = (Math.random() - 0.5) * 0.02;
       velocities[i * 3 + 2] = (Math.random() - 0.5) * 0.02;
     }
-    return { targetPositions: target, initialPositions: initial, randomVelocities: velocities };
+    return { targetPositions: target, targetDepths: depths, initialPositions: initial, randomVelocities: velocities };
   }, []);
 
   const currentPositions = useMemo(() => new Float32Array(PARTICLE_COUNT * 3), []);
   const sizes = useMemo(() => {
     const s = new Float32Array(PARTICLE_COUNT);
     for (let i = 0; i < PARTICLE_COUNT; i++) {
-      s[i] = Math.random() * 0.3 + 0.15; // Tiny uniform dots
+      s[i] = Math.random() * 0.3 + 0.15;
     }
     return s;
   }, []);
@@ -143,16 +142,30 @@ function ParticleSystem({ progress }: { progress: number }) {
       },
       vertexShader: `
         attribute float aSize;
+        attribute float aDepth;
         uniform float uTime;
         uniform float uProgress;
         uniform float uPixelRatio;
         varying float vAlpha;
         varying float vColorMix;
+        varying float vDepth;
+        varying float vLighting;
 
         void main() {
           vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
           float dist = length(position.xy);
-          vAlpha = smoothstep(0.0, 0.2, uProgress) * (0.8 + 0.2 * sin(uTime * 2.0 + dist * 0.5));
+          
+          vDepth = aDepth;
+          
+          // Directional lighting from top-right-front
+          vec3 lightDir = normalize(vec3(0.5, 0.8, 1.0));
+          // Front face gets full light, sides get less
+          float facingLight = mix(1.0, 0.3, aDepth);
+          // Add subtle top-down gradient lighting
+          float topLight = smoothstep(-2.0, 2.0, position.y) * 0.3;
+          vLighting = facingLight + topLight;
+          
+          vAlpha = smoothstep(0.0, 0.2, uProgress) * (0.85 + 0.15 * sin(uTime * 2.0 + dist * 0.5));
           vColorMix = sin(position.x * 0.3 + uTime) * 0.5 + 0.5;
           gl_PointSize = aSize * uPixelRatio * (1.0 + 0.05 * sin(uTime * 3.0 + dist)) * (160.0 / -mvPosition.z);
           gl_Position = projectionMatrix * mvPosition;
@@ -164,16 +177,27 @@ function ParticleSystem({ progress }: { progress: number }) {
         uniform vec3 uColor3;
         varying float vAlpha;
         varying float vColorMix;
+        varying float vDepth;
+        varying float vLighting;
 
         void main() {
-          // Square pixel — no circle discard, use full point quad
           vec2 uv = gl_PointCoord;
-          // Sharp square edges with tiny 1px anti-alias
           float edgeX = smoothstep(0.0, 0.05, uv.x) * smoothstep(1.0, 0.95, uv.x);
           float edgeY = smoothstep(0.0, 0.05, uv.y) * smoothstep(1.0, 0.95, uv.y);
           float alpha = edgeX * edgeY * vAlpha;
+          
           vec3 color = mix(uColor1, uColor2, vColorMix);
           color = mix(color, uColor3, smoothstep(0.7, 1.0, vColorMix));
+          
+          // Apply 3D lighting — front face bright, back face dark
+          color *= vLighting;
+          
+          // Darken deeper layers for depth
+          color *= mix(1.0, 0.35, vDepth);
+          
+          // Slight ambient so back isn't pure black
+          color += vec3(0.03);
+          
           gl_FragColor = vec4(color, alpha);
         }
       `,
@@ -193,7 +217,6 @@ function ParticleSystem({ progress }: { progress: number }) {
 
     for (let i = 0; i < PARTICLE_COUNT; i++) {
       const i3 = i * 3;
-      // Lerp from initial scattered positions to text positions
       currentPositions[i3] = THREE.MathUtils.lerp(initialPositions[i3], targetPositions[i3], ease)
         + Math.sin(t * 1.5 + i * 0.01) * (1 - ease) * 0.3
         + randomVelocities[i3] * Math.sin(t + i) * (1 - ease * 0.8);
@@ -224,6 +247,12 @@ function ParticleSystem({ progress }: { progress: number }) {
           attach="attributes-aSize"
           count={PARTICLE_COUNT}
           array={sizes}
+          itemSize={1}
+        />
+        <bufferAttribute
+          attach="attributes-aDepth"
+          count={PARTICLE_COUNT}
+          array={targetDepths}
           itemSize={1}
         />
       </bufferGeometry>
