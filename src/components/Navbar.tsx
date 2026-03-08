@@ -1,7 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense, lazy } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Magnetic from "./Magnetic";
+
+const LogoCube = lazy(() => import("./LogoCube"));
 
 const navLinks = [
   { label: "Work", href: "/#compartments", isHash: true },

@@ -1,8 +1,7 @@
-import { useEffect, useRef, Suspense } from "react";
+import { useEffect, useRef } from "react";
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import heroBg from "@/assets/hero-bg.jpg";
 import Magnetic from "./Magnetic";
-import LogoCube from "./LogoCube";
 
 const HeroSection = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -125,17 +124,7 @@ const HeroSection = () => {
           </span>
         </motion.div>
 
-        {/* Interactive 3D Logo Cube */}
-        <motion.div
-          className="w-44 h-44 md:w-56 md:h-56 mx-auto mb-6"
-          initial={{ opacity: 0, scale: 0.5, rotateY: -90 }}
-          animate={{ opacity: 1, scale: 1, rotateY: 0 }}
-          transition={{ delay: 0.3, duration: 1.4, ease: [0.23, 1, 0.32, 1] }}
-        >
-          <Suspense fallback={null}>
-            <LogoCube className="w-full h-full" />
-          </Suspense>
-        </motion.div>
+
 
         {/* Title with letter-by-letter animation */}
         <div className="mb-4 overflow-hidden">
