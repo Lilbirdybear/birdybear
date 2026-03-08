@@ -2,8 +2,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
+import { AnimatePresence, motion } from "framer-motion";
 import ParticleField from "@/components/ParticleField";
 import CursorGlow from "@/components/CursorGlow";
 import ScrollProgress from "@/components/ScrollProgress";
@@ -18,6 +19,45 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+const pageVariants = {
+  initial: { opacity: 0, y: 12, filter: "blur(6px)" },
+  animate: {
+    opacity: 1, y: 0, filter: "blur(0px)",
+    transition: { duration: 0.5, ease: [0.23, 1, 0.32, 1] },
+  },
+  exit: {
+    opacity: 0, y: -8, filter: "blur(4px)",
+    transition: { duration: 0.3, ease: [0.23, 1, 0.32, 1] },
+  },
+};
+
+const AnimatedRoutes = () => {
+  const location = useLocation();
+
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={location.pathname}
+        variants={pageVariants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+      >
+        <Routes location={location}>
+          <Route path="/" element={<Index />} />
+          <Route path="/project/:slug" element={<ProjectDetail />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<BlogPost />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </motion.div>
+    </AnimatePresence>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
@@ -28,16 +68,7 @@ const App = () => (
         <CursorGlow />
         <ScrollProgress />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/project/:slug" element={<ProjectDetail />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/blog/:slug" element={<BlogPost />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <AnimatedRoutes />
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>

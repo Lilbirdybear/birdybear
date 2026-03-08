@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useRef, useState } from "react";
 import TextReveal from "./TextReveal";
+import AnimatedCounter from "./AnimatedCounter";
 
 const toolCards = [
   { cls: "compartment-ixd glow-ixd", label: "TOOLS — IXD / UX / PM", labelColor: "text-ixd", tools: ["Figma", "Miro", "Mural", "Framer", "Principle", "Adobe XD", "ProtoPie", "Web Design", "SEO", "Marketing", "Jira", "Monday", "ClickUp", "HacknPlan"] },
@@ -60,56 +61,72 @@ const ToolCard = ({ item, index }: { item: typeof toolCards[0]; index: number })
 
 const AboutSection = () => {
   return (
-    <section className="py-32 px-6 border-t border-border relative">
+    <section className="py-40 px-6 border-t border-border relative">
       {/* Ambient glow */}
       <div className="absolute top-1/2 left-1/4 w-[400px] h-[400px] rounded-full bg-primary/5 blur-[100px] pointer-events-none" />
       
-      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 relative z-10">
+      <div className="max-w-6xl mx-auto relative z-10">
+        {/* Stats counters — unshift-inspired */}
         <motion.div
-          initial={{ opacity: 0, y: 60 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 1, ease: [0.23, 1, 0.32, 1] }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-24 pb-24 border-b border-border/50"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
         >
-          <motion.span
-            className="font-mono text-xs tracking-[0.3em] uppercase text-muted-foreground block mb-4"
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            // ABOUT
-          </motion.span>
-
-          <TextReveal
-            text="Eli Birdsall"
-            as="h2"
-            className="text-3xl md:text-4xl font-bold text-foreground mb-8"
-            delay={0.2}
-          />
-
-          {[
-            "With 8+ years in design, I work across the full spectrum — from interaction design and 3D visualization to game development and hardware tinkering. I run a small print-to-order specialty service that has sharpened my craft as a 3D artist, and I'm constantly building projects that span communication tools, ESP32/Raspberry Pi devices, and immersive game worlds.",
-            "Currently working on two titles under NDA: a classic cyberpunk multi-world game delivering a cinematic experience that will blow players' minds, and a mini game designed to elevate the social experience online.",
-            "I'm a tinkerer and inventor at heart — every discipline informs the others. Game mechanics sharpen my UX thinking, 3D skills add depth to interfaces, and interaction design brings polish to everything I touch.",
-          ].map((para, i) => (
-            <motion.p
-              key={i}
-              className="text-muted-foreground leading-relaxed mb-6"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 + i * 0.15, duration: 0.7 }}
-            >
-              {para}
-            </motion.p>
-          ))}
+          <AnimatedCounter value={8} suffix="+" label="Years Experience" delay={0} />
+          <AnimatedCounter value={40} suffix="+" label="Tools Mastered" delay={0.15} />
+          <AnimatedCounter value={12} label="Certifications" delay={0.3} />
+          <AnimatedCounter value={3} label="Disciplines" delay={0.45} />
         </motion.div>
 
-        <div className="space-y-4">
-          {toolCards.map((item, i) => (
-            <ToolCard key={item.label} item={item} index={i} />
-          ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-20">
+          <motion.div
+            initial={{ opacity: 0, y: 60 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 1, ease: [0.23, 1, 0.32, 1] }}
+          >
+            <motion.span
+              className="font-mono text-xs tracking-[0.3em] uppercase text-muted-foreground block mb-6"
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              // ABOUT
+            </motion.span>
+
+            <TextReveal
+              text="Eli Birdsall"
+              as="h2"
+              className="text-3xl md:text-4xl font-bold text-foreground mb-10"
+              delay={0.2}
+            />
+
+            {[
+              "With 8+ years in design, I work across the full spectrum — from interaction design and 3D visualization to game development and hardware tinkering. I run a small print-to-order specialty service that has sharpened my craft as a 3D artist, and I'm constantly building projects that span communication tools, ESP32/Raspberry Pi devices, and immersive game worlds.",
+              "Currently working on two titles under NDA: a classic cyberpunk multi-world game delivering a cinematic experience that will blow players' minds, and a mini game designed to elevate the social experience online.",
+              "I'm a tinkerer and inventor at heart — every discipline informs the others. Game mechanics sharpen my UX thinking, 3D skills add depth to interfaces, and interaction design brings polish to everything I touch.",
+            ].map((para, i) => (
+              <motion.p
+                key={i}
+                className="text-muted-foreground leading-[1.8] mb-8 text-[15px]"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3 + i * 0.15, duration: 0.7 }}
+              >
+                {para}
+              </motion.p>
+            ))}
+          </motion.div>
+
+          <div className="space-y-5">
+            {toolCards.map((item, i) => (
+              <ToolCard key={item.label} item={item} index={i} />
+            ))}
+          </div>
         </div>
       </div>
     </section>
