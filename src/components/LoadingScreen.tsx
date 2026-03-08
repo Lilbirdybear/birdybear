@@ -1,6 +1,7 @@
 import { useRef, useMemo, useEffect, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { motion, AnimatePresence } from "framer-motion";
+import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import * as THREE from "three";
 
 function CameraRig({ progress }: { progress: number }) {
@@ -241,6 +242,14 @@ const LoadingScreen = ({ isLoading }: LoadingScreenProps) => {
           >
             <CameraRig progress={progress} />
             <ParticleSystem progress={progress} />
+            <EffectComposer>
+              <Bloom
+                intensity={1.2}
+                luminanceThreshold={0.1}
+                luminanceSmoothing={0.9}
+                mipmapBlur
+              />
+            </EffectComposer>
           </Canvas>
 
           {/* Subtle loading indicator */}
