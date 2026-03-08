@@ -18,10 +18,18 @@ const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [cubeReady, setCubeReady] = useState(false);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const location = useLocation();
   const isHome = location.pathname === "/";
 
-  // Delay cube loading until after loading screen transition
+  // Get active link index
+  const activeIndex = navLinks.findIndex((link) => {
+    if (link.isHash) {
+      return isHome && location.hash === link.href.replace("/", "");
+    }
+    return location.pathname === link.href;
+  });
+
   useEffect(() => {
     const timer = setTimeout(() => setCubeReady(true), 4000);
     return () => clearTimeout(timer);
@@ -33,18 +41,28 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const renderLink = (link: typeof navLinks[0], onClick?: () => void) => {
-    const cls = `font-mono text-[11px] tracking-wider transition-all duration-300 ${
-      location.pathname === link.href
+  const renderLink = (link: typeof navLinks[0], index: number, onClick?: () => void) => {
+    const isActive = location.pathname === link.href || (link.isHash && isHome);
+    const cls = `relative font-mono text-[11px] tracking-[0.2em] uppercase transition-all duration-300 py-3 ${
+      isActive
         ? "text-foreground"
         : "text-muted-foreground hover:text-foreground"
     }`;
+
+    const content = (
+      <span
+        onMouseEnter={() => setHoveredIndex(index)}
+        onMouseLeave={() => setHoveredIndex(null)}
+      >
+        {link.label}
+      </span>
+    );
 
     if (link.isHash && isHome) {
       return (
         <Magnetic key={link.label} strength={0.3}>
           <a href={link.href.replace("/", "")} onClick={onClick} className={`${cls} cursor-magnetic`}>
-            {link.label}
+            {content}
           </a>
         </Magnetic>
       );
@@ -53,11 +71,14 @@ const Navbar = () => {
     return (
       <Magnetic key={link.label} strength={0.3}>
         <Link to={link.href} onClick={onClick} className={`${cls} cursor-magnetic`}>
-          {link.label}
+          {content}
         </Link>
       </Magnetic>
     );
   };
+
+  // Determine which index to highlight
+  const indicatorIndex = hoveredIndex !== null ? hoveredIndex : (activeIndex >= 0 ? activeIndex : 0);
 
   return (
     <>
@@ -74,10 +95,10 @@ const Navbar = () => {
         <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
           <Magnetic strength={0.2}>
             <Link to="/" className="flex items-center gap-2 cursor-magnetic group">
-              <div className="w-14 h-14 relative">
+              <div className="w-16 h-16 relative">
                 {cubeReady ? (
                   <Suspense fallback={
-                    <span className="font-mono text-sm tracking-[0.15em] text-foreground font-medium">
+                    <span className="font-mono text-lg tracking-[0.15em] text-foreground font-medium flex items-center h-full">
                       ELI<span className="text-primary group-hover:animate-pulse">.</span>
                     </span>
                   }>
@@ -91,7 +112,7 @@ const Navbar = () => {
                     </motion.div>
                   </Suspense>
                 ) : (
-                  <span className="font-mono text-sm tracking-[0.15em] text-foreground font-medium flex items-center h-full">
+                  <span className="font-mono text-lg tracking-[0.15em] text-foreground font-medium flex items-center h-full">
                     ELI<span className="text-primary">.</span>
                   </span>
                 )}
@@ -99,8 +120,32 @@ const Navbar = () => {
             </Link>
           </Magnetic>
 
-          <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => renderLink(link))}
+          {/* Desktop nav with sliding top indicator */}
+          <div className="hidden md:flex items-center relative">
+            {/* The sliding indicator line - positioned ABOVE */}
+            <motion.div
+              className="absolute h-[2px] bg-primary rounded-full"
+              style={{ top: 0 }}
+              initial={false}
+              animate={{
+                left: `${indicatorIndex * 80}px`,
+                width: "60px",
+                opacity: hoveredIndex !== null || activeIndex >= 0 ? 1 : 0,
+              }}
+              transition={{
+                type: "spring",
+                stiffness: 400,
+                damping: 35,
+              }}
+            />
+            
+            <div className="flex items-center gap-0">
+              {navLinks.map((link, index) => (
+                <div key={link.label} className="w-20 flex justify-center">
+                  {renderLink(link, index)}
+                </div>
+              ))}
+            </div>
           </div>
 
           <button
