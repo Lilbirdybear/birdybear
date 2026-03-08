@@ -50,29 +50,34 @@ function getTextParticles(text: string, count: number): Float32Array {
   canvas.width = 4096;
   canvas.height = 1024;
 
+  // Use Futura-like font stack with geometric sans fallbacks
   ctx.fillStyle = "white";
-  ctx.font = "bold 320px 'Space Grotesk', sans-serif";
+  ctx.font = "600 360px 'Futura', 'Century Gothic', 'Avant Garde', 'Gill Sans', sans-serif";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
+  
+  // Render with sub-pixel precision — draw twice for density
   ctx.fillText(text, canvas.width / 2, canvas.height / 2);
 
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  const pixels: [number, number][] = [];
+  const pixels: [number, number, number][] = []; // x, y, brightness
 
-  // Dense sampling for crisp edges
-  for (let y = 0; y < canvas.height; y += 2) {
-    for (let x = 0; x < canvas.width; x += 2) {
+  // Very dense sampling (every pixel) for maximum crispness
+  for (let y = 0; y < canvas.height; y += 1) {
+    for (let x = 0; x < canvas.width; x += 1) {
       const i = (y * canvas.width + x) * 4;
-      if (imageData.data[i + 3] > 128) {
+      const alpha = imageData.data[i + 3];
+      if (alpha > 60) {
         pixels.push([
           (x - canvas.width / 2) * 0.003,
           -(y - canvas.height / 2) * 0.003,
+          alpha / 255, // store brightness for edge weighting
         ]);
       }
     }
   }
 
-  // Shuffle pixels for even distribution
+  // Shuffle for even distribution
   for (let i = pixels.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [pixels[i], pixels[j]] = [pixels[j], pixels[i]];
@@ -83,7 +88,7 @@ function getTextParticles(text: string, count: number): Float32Array {
     const idx = i % pixels.length;
     positions[i * 3] = pixels[idx][0];
     positions[i * 3 + 1] = pixels[idx][1];
-    positions[i * 3 + 2] = (Math.random() - 0.5) * 0.03;
+    positions[i * 3 + 2] = (Math.random() - 0.5) * 0.01; // Tighter z for flatter, crisper text
   }
   return positions;
 }
