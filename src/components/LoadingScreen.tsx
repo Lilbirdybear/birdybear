@@ -160,10 +160,12 @@ function ParticleSystem({ progress }: { progress: number }) {
         varying float vColorMix;
 
         void main() {
-          float d = length(gl_PointCoord - vec2(0.5));
-          if (d > 0.45) discard;
-          // Hard-edged dot — no soft falloff
-          float alpha = step(d, 0.4) * vAlpha;
+          // Square pixel — no circle discard, use full point quad
+          vec2 uv = gl_PointCoord;
+          // Sharp square edges with tiny 1px anti-alias
+          float edgeX = smoothstep(0.0, 0.05, uv.x) * smoothstep(1.0, 0.95, uv.x);
+          float edgeY = smoothstep(0.0, 0.05, uv.y) * smoothstep(1.0, 0.95, uv.y);
+          float alpha = edgeX * edgeY * vAlpha;
           vec3 color = mix(uColor1, uColor2, vColorMix);
           color = mix(color, uColor3, smoothstep(0.7, 1.0, vColorMix));
           gl_FragColor = vec4(color, alpha);
