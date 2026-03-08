@@ -74,7 +74,7 @@ const App = () => {
   // Stagger heavy effects: mount them 300ms after loading screen starts fading
   useEffect(() => {
     if (!isLoading) {
-      const effectsTimer = setTimeout(() => setShowEffects(true), 400);
+      const effectsTimer = setTimeout(() => setShowEffects(true), 200);
       return () => clearTimeout(effectsTimer);
     }
   }, [isLoading]);
