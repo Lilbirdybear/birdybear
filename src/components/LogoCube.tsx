@@ -73,17 +73,14 @@ const Cube = () => {
           <boxGeometry args={[2, 2, 2]} />
           <meshPhysicalMaterial
             map={texture}
-            color="#e8edf5"
-            metalness={0.05}
-            roughness={0.15}
-            transmission={0.3}
-            thickness={0.5}
-            ior={1.4}
+            color="#ffffff"
+            metalness={0.1}
+            roughness={0.2}
             clearcoat={1}
             clearcoatRoughness={0.1}
-            envMapIntensity={0.8}
-            transparent
-            opacity={0.92}
+            envMapIntensity={1.2}
+            emissive="#334455"
+            emissiveIntensity={0.15}
           />
         </mesh>
       </Float>
