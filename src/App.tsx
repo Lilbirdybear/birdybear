@@ -62,11 +62,20 @@ const AnimatedRoutes = () => {
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [showEffects, setShowEffects] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 2500);
     return () => clearTimeout(timer);
   }, []);
+
+  // Stagger heavy effects: mount them 300ms after loading screen starts fading
+  useEffect(() => {
+    if (!isLoading) {
+      const effectsTimer = setTimeout(() => setShowEffects(true), 400);
+      return () => clearTimeout(effectsTimer);
+    }
+  }, [isLoading]);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -75,16 +84,26 @@ const App = () => {
           <LoadingScreen isLoading={isLoading} />
           <Toaster />
           <Sonner />
-          {!isLoading && (
-            <>
-              <ParticleField />
-              <CursorGlow />
-              <ScrollProgress />
-            </>
-          )}
-          <BrowserRouter>
-            <AnimatedRoutes />
-          </BrowserRouter>
+
+          {/* Pre-render site content behind loading screen so DOM is ready */}
+          <div
+            style={{
+              opacity: isLoading ? 0 : 1,
+              transition: "opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1)",
+              willChange: isLoading ? "opacity" : "auto",
+            }}
+          >
+            {showEffects && (
+              <>
+                <ParticleField />
+                <CursorGlow />
+                <ScrollProgress />
+              </>
+            )}
+            <BrowserRouter>
+              <AnimatedRoutes />
+            </BrowserRouter>
+          </div>
         </TooltipProvider>
       </AuthProvider>
     </QueryClientProvider>
