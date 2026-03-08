@@ -91,18 +91,17 @@ const Cube = () => {
 
 const LogoCube = ({ className = "" }: { className?: string }) => {
   return (
-    <div className={className} style={{ cursor: "grab" }}>
+    <div className={className} style={{ cursor: "grab", width: "100%", height: "100%" }}>
       <Canvas
         camera={{ position: [0, 0, 3.2], fov: 50 }}
         gl={{ antialias: true, alpha: true }}
-        style={{ background: "transparent" }}
+        dpr={[1, 2]}
+        style={{ background: "transparent", width: "100%", height: "100%" }}
       >
-        <ambientLight intensity={0.8} color="#f0f4ff" />
-        <directionalLight position={[5, 5, 5]} intensity={1.2} color="#ffffff" />
-        <pointLight position={[-3, 2, 3]} intensity={0.4} color="#c4d4ff" />
-        <pointLight position={[2, -2, 4]} intensity={0.3} color="#e0e8ff" />
+        <ambientLight intensity={1.2} color="#ffffff" />
+        <directionalLight position={[5, 5, 5]} intensity={1.5} color="#ffffff" />
+        <pointLight position={[-3, 2, 3]} intensity={0.6} color="#aabbff" />
         <Cube />
-        <Environment preset="city" />
       </Canvas>
     </div>
   );
