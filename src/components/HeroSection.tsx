@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import heroBg from "@/assets/hero-bg.jpg";
 import Magnetic from "./Magnetic";
+import ParticleText from "./ParticleText";
 
 const HeroSection = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -36,22 +37,8 @@ const HeroSection = () => {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [mouseX, mouseY]);
 
-  const letterVariants = {
-    hidden: { opacity: 0, y: 80, rotateX: 90 },
-    visible: (i: number) => ({
-      opacity: 1,
-      y: 0,
-      rotateX: 0,
-      transition: {
-        delay: 0.5 + i * 0.05,
-        duration: 0.8,
-        ease: [0.23, 1, 0.32, 1],
-      },
-    }),
-  };
-
-  const title = "The Eli";
-  const subtitle = "Design";
+  // Accessible h1 for SEO (visually hidden, particle canvas is visual)
+  const title = "The Eli Design";
 
   return (
     <section
@@ -138,45 +125,14 @@ const HeroSection = () => {
           </span>
         </motion.div>
 
-        {/* Main title with letter-by-letter animation */}
-        <div className="overflow-hidden mb-2 perspective-container">
-          <motion.h1
-            className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter text-gradient-hero"
-            initial="hidden"
-            animate="visible"
-          >
-            {title.split("").map((char, i) => (
-              <motion.span
-                key={i}
-                className="inline-block"
-                custom={i}
-                variants={letterVariants}
-                style={{ transformStyle: "preserve-3d" }}
-              >
-                {char === " " ? "\u00A0" : char}
-              </motion.span>
-            ))}
-          </motion.h1>
-        </div>
-
-        <div className="overflow-hidden mb-10">
-          <motion.p
-            className="text-3xl md:text-5xl lg:text-6xl font-light tracking-tight text-foreground/20"
-            initial="hidden"
-            animate="visible"
-          >
-            {subtitle.split("").map((char, i) => (
-              <motion.span
-                key={i}
-                className="inline-block"
-                custom={i + title.length}
-                variants={letterVariants}
-              >
-                {char === " " ? "\u00A0" : char}
-              </motion.span>
-            ))}
-          </motion.p>
-        </div>
+        {/* 3D Particle Title */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3, duration: 1.5 }}
+        >
+          <ParticleText text="The Eli" subtext="Design" className="mb-4" />
+        </motion.div>
 
         {/* Discipline tags */}
         <motion.div
