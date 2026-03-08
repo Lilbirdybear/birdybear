@@ -11,16 +11,33 @@ function CameraRig({ progress }: { progress: number }) {
     const t = clock.getElapsedTime();
     const ease = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
 
-    // Slow orbit: circle around the text
-    const orbitRadius = THREE.MathUtils.lerp(1.5, 0.3, ease);
-    const orbitSpeed = 0.25;
-    camera.position.x = Math.sin(t * orbitSpeed) * orbitRadius;
-    camera.position.y = Math.cos(t * orbitSpeed * 0.7) * orbitRadius * 0.5;
+    // Phase 1 (0-0.4): Start zoomed into left side, panning right across letters
+    // Phase 2 (0.4-0.7): Pull back to reveal full text
+    // Phase 3 (0.7-1): Settle into centered view with gentle float
 
-    // Slow zoom: pull in from 14 to 9
-    camera.position.z = THREE.MathUtils.lerp(14, 9, ease);
+    const phase1 = Math.min(ease / 0.4, 1); // 0→1 during first 40%
+    const phase2 = Math.max(0, Math.min((ease - 0.4) / 0.3, 1)); // 0→1 during 40-70%
+    const phase3 = Math.max(0, Math.min((ease - 0.7) / 0.3, 1)); // 0→1 during 70-100%
 
-    camera.lookAt(0, 0, 0);
+    // Pan across: start at left edge (-5), sweep right to center (0)
+    const panX = THREE.MathUtils.lerp(-5, 0, phase1);
+    // Zoom: start very close, pull back to reveal
+    const zoomZ = THREE.MathUtils.lerp(4, 9, phase1);
+    // Then refine to final position
+    const finalZ = THREE.MathUtils.lerp(zoomZ, 10, phase2);
+    // Gentle vertical float in phase 3
+    const floatY = Math.sin(t * 0.8) * 0.15 * phase3;
+    const floatX = Math.sin(t * 0.5) * 0.1 * phase3;
+
+    camera.position.x = THREE.MathUtils.lerp(panX, 0, phase2) + floatX;
+    camera.position.y = THREE.MathUtils.lerp(0.3, 0, phase2) + floatY;
+    camera.position.z = finalZ;
+
+    camera.lookAt(
+      THREE.MathUtils.lerp(panX + 2, 0, phase2),
+      0,
+      0
+    );
   });
 
   return null;
