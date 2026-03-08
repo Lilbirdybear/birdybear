@@ -148,14 +148,17 @@ function ParticleSystem({ progress }: { progress: number }) {
       uniforms: {
         uTime: { value: 0 },
         uProgress: { value: 0 },
-        uColor1: { value: new THREE.Color("#cc2222") },
-        uColor2: { value: new THREE.Color("#cc4422") },
-        uColor3: { value: new THREE.Color("#dddddd") },
+        uColor1: { value: new THREE.Color("#552222") },
+        uColor2: { value: new THREE.Color("#443333") },
+        uColor3: { value: new THREE.Color("#888888") },
+        uDesignColor: { value: new THREE.Color("#ee1111") },
+        uDesignHighlight: { value: new THREE.Color("#ff4444") },
         uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) },
       },
       vertexShader: `
         attribute float aSize;
         attribute float aDepth;
+        attribute float aRegion;
         uniform float uTime;
         uniform float uProgress;
         uniform float uPixelRatio;
@@ -163,18 +166,16 @@ function ParticleSystem({ progress }: { progress: number }) {
         varying float vColorMix;
         varying float vDepth;
         varying float vLighting;
+        varying float vRegion;
 
         void main() {
           vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
           float dist = length(position.xy);
           
           vDepth = aDepth;
+          vRegion = aRegion;
           
-          // Directional lighting from top-right-front
-          vec3 lightDir = normalize(vec3(0.5, 0.8, 1.0));
-          // Front face gets full light, sides get less
           float facingLight = mix(1.0, 0.3, aDepth);
-          // Add subtle top-down gradient lighting
           float topLight = smoothstep(-2.0, 2.0, position.y) * 0.3;
           vLighting = facingLight + topLight;
           
@@ -188,10 +189,13 @@ function ParticleSystem({ progress }: { progress: number }) {
         uniform vec3 uColor1;
         uniform vec3 uColor2;
         uniform vec3 uColor3;
+        uniform vec3 uDesignColor;
+        uniform vec3 uDesignHighlight;
         varying float vAlpha;
         varying float vColorMix;
         varying float vDepth;
         varying float vLighting;
+        varying float vRegion;
 
         void main() {
           vec2 uv = gl_PointCoord;
@@ -199,17 +203,23 @@ function ParticleSystem({ progress }: { progress: number }) {
           float edgeY = smoothstep(0.0, 0.05, uv.y) * smoothstep(1.0, 0.95, uv.y);
           float alpha = edgeX * edgeY * vAlpha;
           
-          vec3 color = mix(uColor1, uColor2, vColorMix);
-          color = mix(color, uColor3, smoothstep(0.7, 1.0, vColorMix));
+          // "The Eli" = dark muted tones
+          vec3 baseColor = mix(uColor1, uColor2, vColorMix);
+          baseColor = mix(baseColor, uColor3, smoothstep(0.7, 1.0, vColorMix));
           
-          // Apply 3D lighting — front face bright, back face dark
+          // "Design" = bright red
+          vec3 designColor = mix(uDesignColor, uDesignHighlight, vColorMix * 0.5);
+          
+          // Blend based on region
+          vec3 color = mix(baseColor, designColor, vRegion);
+          
+          // 3D lighting
           color *= vLighting;
-          
-          // Darken deeper layers for depth
           color *= mix(1.0, 0.35, vDepth);
+          color += vec3(0.02);
           
-          // Slight ambient so back isn't pure black
-          color += vec3(0.03);
+          // Boost "Design" alpha slightly for extra pop
+          alpha *= mix(1.0, 1.3, vRegion);
           
           gl_FragColor = vec4(color, alpha);
         }
