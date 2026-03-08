@@ -124,7 +124,7 @@ function ParticleSystem({ progress }: { progress: number }) {
   const sizes = useMemo(() => {
     const s = new Float32Array(PARTICLE_COUNT);
     for (let i = 0; i < PARTICLE_COUNT; i++) {
-      s[i] = Math.random() * 1.2 + 0.3;
+      s[i] = Math.random() * 0.6 + 0.2;
     }
     return s;
   }, []);
