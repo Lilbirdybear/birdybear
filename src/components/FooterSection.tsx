@@ -18,10 +18,10 @@ const FooterSection = () => {
         >
           <h3 className="text-xl font-bold text-foreground mb-2">Let's collaborate</h3>
           <a
-            href="mailto:hello@example.com"
+            href="mailto:eli.birdsall@daydreamingknights.com"
             className="font-mono text-sm text-primary hover:text-primary/80 transition-colors"
           >
-            hello@example.com
+            eli.birdsall@daydreamingknights.com
           </a>
         </motion.div>
 
