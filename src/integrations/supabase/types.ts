@@ -83,6 +83,33 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_messages: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          subject: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          subject?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          subject?: string | null
+        }
+        Relationships: []
+      }
       projects: {
         Row: {
           category: string
@@ -91,6 +118,7 @@ export type Database = {
           id: string
           image_url: string | null
           published: boolean | null
+          slug: string
           sort_order: number | null
           tags: string[] | null
           title: string
@@ -104,6 +132,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           published?: boolean | null
+          slug: string
           sort_order?: number | null
           tags?: string[] | null
           title: string
@@ -117,6 +146,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           published?: boolean | null
+          slug?: string
           sort_order?: number | null
           tags?: string[] | null
           title?: string
