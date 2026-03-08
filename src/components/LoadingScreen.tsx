@@ -119,7 +119,7 @@ function ParticleSystem({ progress }: { progress: number }) {
   const sizes = useMemo(() => {
     const s = new Float32Array(PARTICLE_COUNT);
     for (let i = 0; i < PARTICLE_COUNT; i++) {
-      s[i] = Math.random() * 2.5 + 0.5;
+      s[i] = Math.random() * 1.2 + 0.3;
     }
     return s;
   }, []);
@@ -161,12 +161,13 @@ function ParticleSystem({ progress }: { progress: number }) {
         void main() {
           float d = length(gl_PointCoord - vec2(0.5));
           if (d > 0.5) discard;
-          float alpha = smoothstep(0.5, 0.1, d) * vAlpha;
+          // Sharp circular particle with crisp edge
+          float alpha = smoothstep(0.5, 0.35, d) * vAlpha;
           vec3 color = mix(uColor1, uColor2, vColorMix);
           color = mix(color, uColor3, smoothstep(0.7, 1.0, vColorMix));
-          // Glow core
-          float glow = exp(-d * 6.0) * 0.5;
-          gl_FragColor = vec4(color + glow, alpha);
+          // Tiny bright core, no heavy glow
+          float core = smoothstep(0.3, 0.0, d) * 0.2;
+          gl_FragColor = vec4(color + core, alpha);
         }
       `,
       transparent: true,
@@ -261,9 +262,9 @@ const LoadingScreen = ({ isLoading }: LoadingScreenProps) => {
             <ParticleSystem progress={progress} />
             <EffectComposer>
               <Bloom
-                intensity={1.2}
-                luminanceThreshold={0.1}
-                luminanceSmoothing={0.9}
+                intensity={0.4}
+                luminanceThreshold={0.3}
+                luminanceSmoothing={0.4}
                 mipmapBlur
               />
             </EffectComposer>
