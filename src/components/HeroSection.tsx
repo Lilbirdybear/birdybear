@@ -1,8 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, Suspense } from "react";
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import heroBg from "@/assets/hero-bg.jpg";
 import Magnetic from "./Magnetic";
 import ParticleText from "./ParticleText";
+import LogoCube from "./LogoCube";
 
 const HeroSection = () => {
   const containerRef = useRef<HTMLDivElement>(null);
