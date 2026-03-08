@@ -1,3 +1,5 @@
+import { useRef, useState } from "react";
+
 interface CompartmentCardProps {
   title: string;
   subtitle: string;
@@ -30,11 +32,32 @@ const variantStyles = {
 
 const CompartmentCard = ({ title, subtitle, description, image, variant, index }: CompartmentCardProps) => {
   const styles = variantStyles[variant];
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [transform, setTransform] = useState("");
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    setTransform(`perspective(800px) rotateX(${y * -8}deg) rotateY(${x * 8}deg) translateZ(10px)`);
+  };
+
+  const handleMouseLeave = () => {
+    setTransform("perspective(800px) rotateX(0deg) rotateY(0deg) translateZ(0px)");
+  };
 
   return (
     <div
-      className={`group glass-panel border ${styles.border} ${styles.glow} overflow-hidden opacity-0 animate-fade-in-up transition-all duration-500 hover:scale-[1.02]`}
-      style={{ animationDelay: `${0.2 + index * 0.15}s` }}
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className={`group glass-panel border ${styles.border} ${styles.glow} overflow-hidden opacity-0 animate-slide-in-3d preserve-3d`}
+      style={{
+        animationDelay: `${0.2 + index * 0.2}s`,
+        transform,
+        transition: "transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.5s ease",
+      }}
     >
       {/* Image */}
       <div className="relative aspect-[4/3] overflow-hidden">
@@ -42,6 +65,7 @@ const CompartmentCard = ({ title, subtitle, description, image, variant, index }
           src={image}
           alt={title}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          style={{ transform: "translateZ(0)" }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
         
@@ -54,8 +78,8 @@ const CompartmentCard = ({ title, subtitle, description, image, variant, index }
         </div>
       </div>
 
-      {/* Content */}
-      <div className="p-6">
+      {/* Content - pushed forward in Z space */}
+      <div className="p-6" style={{ transform: "translateZ(20px)", transformStyle: "preserve-3d" }}>
         <h3 className={`text-2xl font-bold mb-3 ${styles.gradient}`}>
           {title}
         </h3>

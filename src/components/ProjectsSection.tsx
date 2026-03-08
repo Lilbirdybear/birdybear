@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 type Filter = "all" | "ixd" | "3d" | "game";
 
@@ -27,11 +27,22 @@ const categoryDot: Record<string, string> = {
 const ProjectsSection = () => {
   const [active, setActive] = useState<Filter>("all");
   const filtered = active === "all" ? projects : projects.filter((p) => p.category === active);
+  const sectionRef = useRef<HTMLElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setVisible(true); },
+      { threshold: 0.1 }
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <section className="py-32 px-6 border-t border-border">
+    <section ref={sectionRef} className="py-32 px-6 border-t border-border perspective-container">
       <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+        <div className={`flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6 transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
           <div>
             <span className="font-mono text-xs tracking-[0.3em] uppercase text-muted-foreground block mb-4">
               // SELECTED WORK
@@ -44,7 +55,7 @@ const ProjectsSection = () => {
               <button
                 key={f.value}
                 onClick={() => setActive(f.value)}
-                className={`font-mono text-xs tracking-wider px-4 py-2 transition-all ${
+                className={`font-mono text-xs tracking-wider px-4 py-2 transition-all duration-300 ${
                   active === f.value
                     ? `${f.color} glass-panel`
                     : "text-muted-foreground hover:text-foreground"
@@ -58,10 +69,14 @@ const ProjectsSection = () => {
 
         {/* Project list */}
         <div className="space-y-px">
-          {filtered.map((project) => (
+          {filtered.map((project, i) => (
             <div
               key={project.id}
-              className="group flex items-center justify-between p-6 glass-panel border border-border hover:border-primary/20 transition-all cursor-pointer"
+              className={`group flex items-center justify-between p-6 glass-panel border border-border hover:border-primary/20 transition-all duration-500 cursor-pointer tilt-card ${visible ? "opacity-100" : "opacity-0"}`}
+              style={{
+                transitionDelay: visible ? `${i * 0.08}s` : "0s",
+                transform: visible ? undefined : "perspective(800px) rotateX(8deg) translateY(20px)",
+              }}
             >
               <div className="flex items-center gap-4">
                 <div className={`w-2 h-2 rounded-full ${categoryDot[project.category]}`} />
