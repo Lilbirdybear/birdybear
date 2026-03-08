@@ -8,6 +8,7 @@ import BlogManager from "@/components/admin/BlogManager";
 import AboutManager from "@/components/admin/AboutManager";
 import SettingsManager from "@/components/admin/SettingsManager";
 import FileManager from "@/components/admin/FileManager";
+import MessagesManager from "@/components/admin/MessagesManager";
 
 const Admin = () => {
   const { user, isAdmin, loading, signOut } = useAuth();
@@ -54,12 +55,14 @@ const Admin = () => {
             <TabsTrigger value="about">About</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
             <TabsTrigger value="files">Files</TabsTrigger>
+            <TabsTrigger value="messages">Messages</TabsTrigger>
           </TabsList>
           <TabsContent value="projects"><ProjectsManager /></TabsContent>
           <TabsContent value="blog"><BlogManager /></TabsContent>
           <TabsContent value="about"><AboutManager /></TabsContent>
           <TabsContent value="settings"><SettingsManager /></TabsContent>
           <TabsContent value="files"><FileManager /></TabsContent>
+          <TabsContent value="messages"><MessagesManager /></TabsContent>
         </Tabs>
       </div>
     </div>
