@@ -16,8 +16,15 @@ const navLinks = [
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [cubeReady, setCubeReady] = useState(false);
   const location = useLocation();
   const isHome = location.pathname === "/";
+
+  // Delay cube loading until after loading screen transition
+  useEffect(() => {
+    const timer = setTimeout(() => setCubeReady(true), 4000);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -63,17 +70,30 @@ const Navbar = () => {
         animate={{ y: 0 }}
         transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
       >
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
           <Magnetic strength={0.2}>
             <Link to="/" className="flex items-center gap-2 cursor-magnetic group">
-              <div className="w-12 h-12 relative">
-                <Suspense fallback={
-                  <span className="font-mono text-sm tracking-[0.15em] text-foreground font-medium">
-                    ELI<span className="text-primary group-hover:animate-pulse">.</span>
+              <div className="w-14 h-14 relative">
+                {cubeReady ? (
+                  <Suspense fallback={
+                    <span className="font-mono text-sm tracking-[0.15em] text-foreground font-medium">
+                      ELI<span className="text-primary group-hover:animate-pulse">.</span>
+                    </span>
+                  }>
+                    <motion.div
+                      className="w-full h-full"
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 1, ease: [0.23, 1, 0.32, 1] }}
+                    >
+                      <LogoCube className="w-full h-full" />
+                    </motion.div>
+                  </Suspense>
+                ) : (
+                  <span className="font-mono text-sm tracking-[0.15em] text-foreground font-medium flex items-center h-full">
+                    ELI<span className="text-primary">.</span>
                   </span>
-                }>
-                  <LogoCube className="w-full h-full" />
-                </Suspense>
+                )}
               </div>
             </Link>
           </Magnetic>
