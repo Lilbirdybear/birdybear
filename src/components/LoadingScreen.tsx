@@ -52,7 +52,7 @@ function getTextParticles(text: string, count: number): Float32Array {
 
   // Use Futura-like font stack with geometric sans fallbacks
   ctx.fillStyle = "white";
-  ctx.font = "600 360px 'Futura', 'Century Gothic', 'Avant Garde', 'Gill Sans', sans-serif";
+  ctx.font = "600 360px 'Jost', 'Futura', 'Century Gothic', sans-serif";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   
