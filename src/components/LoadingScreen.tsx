@@ -278,6 +278,12 @@ function ParticleSystem({ progress }: { progress: number }) {
           array={targetDepths}
           itemSize={1}
         />
+        <bufferAttribute
+          attach="attributes-aRegion"
+          count={PARTICLE_COUNT}
+          array={targetRegions}
+          itemSize={1}
+        />
       </bufferGeometry>
     </points>
   );
