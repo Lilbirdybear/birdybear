@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import Navbar from "@/components/Navbar";
 import FooterSection from "@/components/FooterSection";
 
 const Blog = () => {
@@ -21,7 +20,7 @@ const Blog = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
+      
       <div className="pt-14">
         <section className="py-32 px-6">
           <div className="max-w-4xl mx-auto">

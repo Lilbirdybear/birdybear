@@ -12,6 +12,7 @@ import ScrollProgress from "@/components/ScrollProgress";
 import LoadingScreen from "@/components/LoadingScreen";
 import Index from "./pages/Index";
 import About from "./pages/About";
+import Navbar from "./components/Navbar";
 import Admin from "./pages/Admin";
 import AdminLogin from "./pages/AdminLogin";
 import Blog from "./pages/Blog";
@@ -105,6 +106,7 @@ const App = () => {
               </>
             )}
             <BrowserRouter>
+              <Navbar />
               <AnimatedRoutes />
             </BrowserRouter>
           </div>

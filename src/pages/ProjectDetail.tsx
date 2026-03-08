@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import Navbar from "@/components/Navbar";
 import FooterSection from "@/components/FooterSection";
 
 const categoryColor: Record<string, string> = {
@@ -55,7 +54,7 @@ const ProjectDetail = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
+      
       <div className="pt-14">
         {/* Hero area */}
         <motion.div
