@@ -1,6 +1,6 @@
 import { useRef, useState, useMemo } from "react";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
-import { Float, Environment } from "@react-three/drei";
+import { Float } from "@react-three/drei";
 import * as THREE from "three";
 import personalMark from "@/assets/personal-mark.png";
 
@@ -71,19 +71,13 @@ const Cube = () => {
       <Float speed={2} rotationIntensity={0.3} floatIntensity={0.5}>
         <mesh ref={meshRef}>
           <boxGeometry args={[2, 2, 2]} />
-          <meshPhysicalMaterial
+          <meshStandardMaterial
             map={texture}
-            color="#e8edf5"
-            metalness={0.05}
-            roughness={0.15}
-            transmission={0.3}
-            thickness={0.5}
-            ior={1.4}
-            clearcoat={1}
-            clearcoatRoughness={0.1}
-            envMapIntensity={0.8}
-            transparent
-            opacity={0.92}
+            color="#111111"
+            metalness={0.6}
+            roughness={0.3}
+            emissive="#ffffff"
+            emissiveIntensity={0.08}
           />
         </mesh>
       </Float>
@@ -94,18 +88,17 @@ const Cube = () => {
 
 const LogoCube = ({ className = "" }: { className?: string }) => {
   return (
-    <div className={className} style={{ cursor: "grab" }}>
+    <div className={className} style={{ cursor: "grab", width: "100%", height: "100%" }}>
       <Canvas
-        camera={{ position: [0, 0, 5], fov: 45 }}
+        camera={{ position: [0, 0, 3.2], fov: 50 }}
         gl={{ antialias: true, alpha: true }}
-        style={{ background: "transparent" }}
+        dpr={[1, 2]}
+        style={{ background: "transparent", width: "100%", height: "100%" }}
       >
-        <ambientLight intensity={0.8} color="#f0f4ff" />
-        <directionalLight position={[5, 5, 5]} intensity={1.2} color="#ffffff" />
-        <pointLight position={[-3, 2, 3]} intensity={0.4} color="#c4d4ff" />
-        <pointLight position={[2, -2, 4]} intensity={0.3} color="#e0e8ff" />
+        <ambientLight intensity={1.2} color="#ffffff" />
+        <directionalLight position={[5, 5, 5]} intensity={1.5} color="#ffffff" />
+        <pointLight position={[-3, 2, 3]} intensity={0.6} color="#aabbff" />
         <Cube />
-        <Environment preset="city" />
       </Canvas>
     </div>
   );
