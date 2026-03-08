@@ -114,8 +114,8 @@ function ParticleSystem({ progress }: { progress: number }) {
   const pointsRef = useRef<THREE.Points>(null!);
   const materialRef = useRef<THREE.ShaderMaterial>(null!);
 
-  const { targetPositions, targetDepths, initialPositions, randomVelocities } = useMemo(() => {
-    const { positions: target, depths } = getTextParticles("The Eli Design", PARTICLE_COUNT);
+  const { targetPositions, targetDepths, targetRegions, initialPositions, randomVelocities } = useMemo(() => {
+    const { positions: target, depths, regions } = getTextParticles("The Eli Design", PARTICLE_COUNT);
     const initial = new Float32Array(PARTICLE_COUNT * 3);
     const velocities = new Float32Array(PARTICLE_COUNT * 3);
 
@@ -131,7 +131,7 @@ function ParticleSystem({ progress }: { progress: number }) {
       velocities[i * 3 + 1] = (Math.random() - 0.5) * 0.02;
       velocities[i * 3 + 2] = (Math.random() - 0.5) * 0.02;
     }
-    return { targetPositions: target, targetDepths: depths, initialPositions: initial, randomVelocities: velocities };
+    return { targetPositions: target, targetDepths: depths, targetRegions: regions, initialPositions: initial, randomVelocities: velocities };
   }, []);
 
   const currentPositions = useMemo(() => new Float32Array(PARTICLE_COUNT * 3), []);
