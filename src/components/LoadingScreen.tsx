@@ -93,7 +93,7 @@ function getTextParticles(text: string, count: number): Float32Array {
   return positions;
 }
 
-const PARTICLE_COUNT = 22000;
+const PARTICLE_COUNT = 35000;
 
 function ParticleSystem({ progress }: { progress: number }) {
   const pointsRef = useRef<THREE.Points>(null!);
