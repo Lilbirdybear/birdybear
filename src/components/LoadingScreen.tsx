@@ -130,9 +130,9 @@ function ParticleSystem({ progress }: { progress: number }) {
       uniforms: {
         uTime: { value: 0 },
         uProgress: { value: 0 },
-        uColor1: { value: new THREE.Color("#ff3333") },
-        uColor2: { value: new THREE.Color("#ff6644") },
-        uColor3: { value: new THREE.Color("#ffffff") },
+        uColor1: { value: new THREE.Color("#cc2222") },
+        uColor2: { value: new THREE.Color("#cc4422") },
+        uColor3: { value: new THREE.Color("#dddddd") },
         uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) },
       },
       vertexShader: `
