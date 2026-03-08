@@ -317,10 +317,8 @@ const LoadingScreen = ({ isLoading }: LoadingScreenProps) => {
           style={{ background: "hsl(var(--background))" }}
           exit={{
             opacity: 0,
-            scale: 1.15,
-            filter: "blur(12px) brightness(1.8)",
           }}
-          transition={{ duration: 1.8, ease: [0.23, 1, 0.32, 1] }}
+          transition={{ duration: 2.2, ease: [0.23, 1, 0.32, 1] }}
         >
           {/* Radial vortex glow that intensifies at end */}
           <motion.div
