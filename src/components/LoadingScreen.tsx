@@ -44,30 +44,41 @@ function CameraRig({ progress }: { progress: number }) {
 }
 
 // Generate particle positions that form text
-function getTextParticles(text: string, count: number): { positions: Float32Array; depths: Float32Array } {
+function getTextParticles(text: string, count: number): { positions: Float32Array; depths: Float32Array; regions: Float32Array } {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d")!;
   canvas.width = 6144;
   canvas.height = 1536;
 
-  ctx.fillStyle = "white";
-  ctx.font = "600 480px 'Jost', 'Futura', 'Century Gothic', sans-serif";
+  const font = "600 480px 'Jost', 'Futura', 'Century Gothic', sans-serif";
+  ctx.font = font;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
+
+  // Measure "The Eli " to find where "Design" starts
+  const fullText = text;
+  const prefixText = "The Eli ";
+  const fullWidth = ctx.measureText(fullText).width;
+  const prefixWidth = ctx.measureText(prefixText).width;
+  // "Design" starts at this x offset from center
+  const designStartX = canvas.width / 2 - fullWidth / 2 + prefixWidth;
+
+  ctx.fillStyle = "white";
   ctx.fillText(text, canvas.width / 2, canvas.height / 2);
 
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  const pixels: [number, number, number][] = []; // x, y, alpha
+  const pixels: [number, number, number][] = []; // x, y, region (0=TheEli, 1=Design)
 
   for (let y = 0; y < canvas.height; y += 1) {
     for (let x = 0; x < canvas.width; x += 1) {
       const i = (y * canvas.width + x) * 4;
       const alpha = imageData.data[i + 3];
       if (alpha > 100) {
+        const region = x >= designStartX ? 1 : 0;
         pixels.push([
           (x - canvas.width / 2) * 0.002,
           -(y - canvas.height / 2) * 0.002,
-          alpha / 255,
+          region,
         ]);
       }
     }
@@ -78,21 +89,23 @@ function getTextParticles(text: string, count: number): { positions: Float32Arra
     [pixels[i], pixels[j]] = [pixels[j], pixels[i]];
   }
 
-  const EXTRUDE_DEPTH = 0.35; // 3D extrusion depth
-  const LAYERS = 6; // number of depth layers
+  const EXTRUDE_DEPTH = 0.35;
+  const LAYERS = 6;
 
   const positions = new Float32Array(count * 3);
-  const depths = new Float32Array(count); // 0 = front face, 1 = back face
+  const depths = new Float32Array(count);
+  const regions = new Float32Array(count);
   for (let i = 0; i < count; i++) {
     const idx = i % pixels.length;
     const layer = Math.floor(Math.random() * LAYERS);
-    const depthT = layer / (LAYERS - 1); // 0 to 1
+    const depthT = layer / (LAYERS - 1);
     positions[i * 3] = pixels[idx][0];
     positions[i * 3 + 1] = pixels[idx][1];
-    positions[i * 3 + 2] = -depthT * EXTRUDE_DEPTH; // extrude backward
+    positions[i * 3 + 2] = -depthT * EXTRUDE_DEPTH;
     depths[i] = depthT;
+    regions[i] = pixels[idx][2];
   }
-  return { positions, depths };
+  return { positions, depths, regions };
 }
 
 const PARTICLE_COUNT = 40000;
