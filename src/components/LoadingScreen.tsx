@@ -315,9 +315,51 @@ const LoadingScreen = ({ isLoading }: LoadingScreenProps) => {
         <motion.div
           className="fixed inset-0 z-[100]"
           style={{ background: "hsl(var(--background))" }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1.4, ease: [0.23, 1, 0.32, 1] }}
+          exit={{
+            opacity: 0,
+            scale: 1.15,
+            filter: "blur(12px) brightness(1.8)",
+          }}
+          transition={{ duration: 1.8, ease: [0.23, 1, 0.32, 1] }}
         >
+          {/* Radial vortex glow that intensifies at end */}
+          <motion.div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: `radial-gradient(circle at 50% 50%, rgba(238,17,17,${progress > 0.7 ? (progress - 0.7) * 0.5 : 0}) 0%, transparent 60%)`,
+            }}
+            exit={{ opacity: 3 }}
+            transition={{ duration: 1.2 }}
+          />
+
+          {/* Zoom tunnel lines */}
+          <motion.div
+            className="absolute inset-0 pointer-events-none overflow-hidden"
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            {[...Array(8)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute left-1/2 top-1/2 w-px bg-gradient-to-b from-transparent via-primary/20 to-transparent"
+                style={{
+                  height: "200vh",
+                  transform: `rotate(${i * 22.5}deg)`,
+                  transformOrigin: "center center",
+                  marginLeft: "-0.5px",
+                  marginTop: "-100vh",
+                }}
+                initial={{ opacity: 0, scaleY: 0 }}
+                animate={{
+                  opacity: progress > 0.6 ? (progress - 0.6) * 1.5 : 0,
+                  scaleY: progress > 0.6 ? 1 : 0,
+                }}
+                exit={{ opacity: 0.8, scaleY: 2 }}
+                transition={{ duration: 0.8 }}
+              />
+            ))}
+          </motion.div>
+
           <Canvas
             camera={{ position: [0, 0, 14], fov: 50 }}
             dpr={[1, 2]}
@@ -327,9 +369,9 @@ const LoadingScreen = ({ isLoading }: LoadingScreenProps) => {
             <ParticleSystem progress={progress} />
             <EffectComposer>
               <Bloom
-                intensity={0.1}
-                luminanceThreshold={0.7}
-                luminanceSmoothing={0.2}
+                intensity={progress > 0.8 ? 0.1 + (progress - 0.8) * 3 : 0.1}
+                luminanceThreshold={0.4}
+                luminanceSmoothing={0.3}
                 mipmapBlur
               />
             </EffectComposer>
