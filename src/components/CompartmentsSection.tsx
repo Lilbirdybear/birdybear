@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import CompartmentCard from "./CompartmentCard";
+import TextReveal from "./TextReveal";
 import ixdPreview from "@/assets/ixd-preview.jpg";
 import threeDPreview from "@/assets/3d-preview.jpg";
 import gamePreview from "@/assets/game-preview.jpg";
@@ -30,19 +31,40 @@ const compartments = [
 
 const CompartmentsSection = () => {
   return (
-    <section id="compartments" className="py-32 px-6 perspective-container">
+    <section id="compartments" className="py-32 px-6 relative">
+      {/* Decorative line */}
+      <motion.div
+        className="absolute top-0 left-1/2 w-px h-24 -translate-x-1/2"
+        style={{ background: "linear-gradient(to bottom, hsl(var(--primary) / 0.3), transparent)" }}
+        initial={{ scaleY: 0 }}
+        whileInView={{ scaleY: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 1 }}
+        transformOrigin="top"
+      />
+
       <div className="max-w-6xl mx-auto">
         <motion.div
-          className="mb-16"
-          initial={{ opacity: 0, y: 40, rotateX: 8 }}
-          whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+          className="mb-20"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.5 }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
+          transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
         >
-          <span className="font-mono text-xs tracking-[0.3em] uppercase text-muted-foreground block mb-4">
+          <motion.span
+            className="font-mono text-xs tracking-[0.3em] uppercase text-muted-foreground block mb-4"
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+          >
             // DISCIPLINES
-          </span>
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground">Three Compartments</h2>
+          </motion.span>
+          <TextReveal
+            text="Three Compartments"
+            as="h2"
+            className="text-3xl md:text-4xl font-bold text-foreground"
+            staggerChildren={0.04}
+          />
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
