@@ -126,26 +126,38 @@ const HeroSection = () => {
           </span>
         </motion.div>
 
-        {/* 3D Particle Title */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3, duration: 1.5 }}
-        >
-          <ParticleText text="The Eli" subtext="Design" className="mb-4" />
-        </motion.div>
-
         {/* Interactive 3D Logo Cube */}
         <motion.div
-          className="w-40 h-40 md:w-52 md:h-52 mx-auto mb-8"
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.8, duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
+          className="w-44 h-44 md:w-56 md:h-56 mx-auto mb-6"
+          initial={{ opacity: 0, scale: 0.5, rotateY: -90 }}
+          animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+          transition={{ delay: 0.3, duration: 1.4, ease: [0.23, 1, 0.32, 1] }}
         >
           <Suspense fallback={null}>
             <LogoCube className="w-full h-full" />
           </Suspense>
         </motion.div>
+
+        {/* Title with letter-by-letter animation */}
+        <div className="mb-4 overflow-hidden">
+          <div className="flex items-center justify-center gap-1 md:gap-2">
+            {"The Eli Design".split("").map((char, i) => (
+              <motion.span
+                key={i}
+                className={`text-4xl md:text-6xl lg:text-7xl font-bold text-foreground inline-block ${char === " " ? "w-3 md:w-5" : ""}`}
+                initial={{ opacity: 0, y: 40, rotateX: -90, filter: "blur(8px)" }}
+                animate={{ opacity: 1, y: 0, rotateX: 0, filter: "blur(0px)" }}
+                transition={{
+                  delay: 1.0 + i * 0.05,
+                  duration: 0.6,
+                  ease: [0.23, 1, 0.32, 1],
+                }}
+              >
+                {char === " " ? "\u00A0" : char}
+              </motion.span>
+            ))}
+          </div>
+        </div>
 
         {/* Discipline tags */}
         <motion.div
