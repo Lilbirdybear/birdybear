@@ -7,7 +7,7 @@ const navLinks = [
   { label: "Work", href: "/#compartments", isHash: true },
   { label: "Projects", href: "/#projects", isHash: true },
   { label: "Blog", href: "/blog", isHash: false },
-  { label: "About", href: "/#about", isHash: true },
+  { label: "About", href: "/about", isHash: false },
   { label: "Contact", href: "/contact", isHash: false },
 ];
 
