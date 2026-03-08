@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Link } from "react-router-dom";
 
 type Filter = "all" | "ixd" | "3d" | "game";
 
@@ -79,28 +80,32 @@ const ProjectsSection = () => {
                   x: 6,
                   transition: { duration: 0.25 },
                 }}
-                className="group flex items-center justify-between p-6 glass-panel border border-border hover:border-primary/20 cursor-pointer"
               >
-                <div className="flex items-center gap-4">
-                  <div className={`w-2 h-2 rounded-full ${categoryDot[project.category]}`} />
-                  <h3 className="text-lg font-medium text-foreground group-hover:text-primary transition-colors">
-                    {project.title}
-                  </h3>
-                </div>
-
-                <div className="flex items-center gap-6">
-                  <div className="hidden md:flex gap-2">
-                    {(project.tags || []).map((tag) => (
-                      <span key={tag} className="font-mono text-[10px] tracking-wider text-muted-foreground px-2 py-1 border border-border rounded-sm">
-                        {tag}
-                      </span>
-                    ))}
+                <Link
+                  to={`/project/${project.slug}`}
+                  className="group flex items-center justify-between p-6 glass-panel border border-border hover:border-primary/20 cursor-pointer block"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className={`w-2 h-2 rounded-full ${categoryDot[project.category]}`} />
+                    <h3 className="text-lg font-medium text-foreground group-hover:text-primary transition-colors">
+                      {project.title}
+                    </h3>
                   </div>
-                  <span className="font-mono text-xs text-muted-foreground">{project.year}</span>
-                  <svg className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-all group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
+
+                  <div className="flex items-center gap-6">
+                    <div className="hidden md:flex gap-2">
+                      {(project.tags || []).map((tag) => (
+                        <span key={tag} className="font-mono text-[10px] tracking-wider text-muted-foreground px-2 py-1 border border-border rounded-sm">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                    <span className="font-mono text-xs text-muted-foreground">{project.year}</span>
+                    <svg className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-all group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </Link>
               </motion.div>
             ))}
           </AnimatePresence>
