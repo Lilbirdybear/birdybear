@@ -96,7 +96,7 @@ const LogoCube = ({ className = "" }: { className?: string }) => {
   return (
     <div className={className} style={{ cursor: "grab" }}>
       <Canvas
-        camera={{ position: [0, 0, 5], fov: 45 }}
+        camera={{ position: [0, 0, 3.2], fov: 50 }}
         gl={{ antialias: true, alpha: true }}
         style={{ background: "transparent" }}
       >
