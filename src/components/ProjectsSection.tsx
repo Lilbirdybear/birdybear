@@ -1,16 +1,9 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 type Filter = "all" | "ixd" | "3d" | "game";
-
-const projects = [
-  { id: 1, title: "Neural Interface", category: "ixd" as const, year: "2025", tags: ["UX Research", "Prototyping"] },
-  { id: 2, title: "Vertex Creature", category: "3d" as const, year: "2025", tags: ["ZBrush", "Substance"] },
-  { id: 3, title: "Neon Descent", category: "game" as const, year: "2024", tags: ["Unreal Engine", "Level Design"] },
-  { id: 4, title: "Haptic Dashboard", category: "ixd" as const, year: "2024", tags: ["Figma", "Motion Design"] },
-  { id: 5, title: "Mech Assembly", category: "3d" as const, year: "2024", tags: ["Blender", "Hard Surface"] },
-  { id: 6, title: "Phantom Protocol", category: "game" as const, year: "2024", tags: ["Unity", "Narrative"] },
-];
 
 const filterConfig: { label: string; value: Filter; color: string }[] = [
   { label: "ALL", value: "all", color: "text-foreground" },
@@ -27,6 +20,16 @@ const categoryDot: Record<string, string> = {
 
 const ProjectsSection = () => {
   const [active, setActive] = useState<Filter>("all");
+
+  const { data: projects = [] } = useQuery({
+    queryKey: ["projects"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("projects").select("*").eq("published", true).order("sort_order");
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const filtered = active === "all" ? projects : projects.filter((p) => p.category === active);
 
   return (
@@ -87,7 +90,7 @@ const ProjectsSection = () => {
 
                 <div className="flex items-center gap-6">
                   <div className="hidden md:flex gap-2">
-                    {project.tags.map((tag) => (
+                    {(project.tags || []).map((tag) => (
                       <span key={tag} className="font-mono text-[10px] tracking-wider text-muted-foreground px-2 py-1 border border-border rounded-sm">
                         {tag}
                       </span>
