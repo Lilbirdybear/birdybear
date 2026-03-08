@@ -35,12 +35,11 @@ const CompartmentsSection = () => {
       {/* Decorative line */}
       <motion.div
         className="absolute top-0 left-1/2 w-px h-24 -translate-x-1/2"
-        style={{ background: "linear-gradient(to bottom, hsl(var(--primary) / 0.3), transparent)" }}
+        style={{ background: "linear-gradient(to bottom, hsl(var(--primary) / 0.3), transparent)", transformOrigin: "top" }}
         initial={{ scaleY: 0 }}
         whileInView={{ scaleY: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 1 }}
-        transformOrigin="top"
       />
 
       <div className="max-w-6xl mx-auto">
