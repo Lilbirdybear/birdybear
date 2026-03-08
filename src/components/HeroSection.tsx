@@ -23,9 +23,9 @@ const HeroSection = () => {
         </div>
 
         <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-8 opacity-0 animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
-          <span className="block text-foreground">Compartments</span>
+          <span className="block text-foreground">The Eli</span>
           <span className="block text-foreground/30 text-3xl md:text-4xl lg:text-5xl font-light mt-2">
-            of Design
+            Design
           </span>
         </h1>
 

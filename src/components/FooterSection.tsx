@@ -30,7 +30,7 @@ const FooterSection = () => {
           © 2026 PORTFOLIO
         </span>
         <span className="font-mono text-[10px] tracking-wider text-muted-foreground">
-          COMPARTMENTALIZED DESIGN
+          THE ELI DESIGN
         </span>
       </div>
     </footer>

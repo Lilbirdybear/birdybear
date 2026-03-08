@@ -7,7 +7,7 @@ const Navbar = () => {
     <nav className="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-border">
       <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
         <a href="#" className="font-mono text-sm tracking-[0.15em] text-foreground font-medium">
-          CMPRT<span className="text-primary">.</span>
+          ELI<span className="text-primary">.</span>
         </a>
 
         {/* Desktop */}
