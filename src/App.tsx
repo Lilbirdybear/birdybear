@@ -85,11 +85,11 @@ const App = () => {
           <Toaster />
           <Sonner />
 
-          {/* Pre-render site content behind loading screen so DOM is ready */}
+          {/* Pre-render site content behind loading screen — crossfade */}
           <div
             style={{
               opacity: isLoading ? 0 : 1,
-              transition: "opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1)",
+              transition: "opacity 1.2s cubic-bezier(0.23, 1, 0.32, 1)",
               willChange: isLoading ? "opacity" : "auto",
             }}
           >
