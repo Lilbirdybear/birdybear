@@ -31,7 +31,8 @@ const ProjectsManager = () => {
 
   const upsert = useMutation({
     mutationFn: async (p: Partial<Project>) => {
-      const payload = { ...p, tags: tagsInput.split(",").map(t => t.trim()).filter(Boolean) };
+      const slug = p.slug || (p.title || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+      const payload = { ...p, slug, tags: tagsInput.split(",").map(t => t.trim()).filter(Boolean) };
       if (p.id) {
         const { error } = await supabase.from("projects").update(payload).eq("id", p.id);
         if (error) throw error;
