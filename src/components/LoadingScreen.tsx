@@ -44,30 +44,41 @@ function CameraRig({ progress }: { progress: number }) {
 }
 
 // Generate particle positions that form text
-function getTextParticles(text: string, count: number): { positions: Float32Array; depths: Float32Array } {
+function getTextParticles(text: string, count: number): { positions: Float32Array; depths: Float32Array; regions: Float32Array } {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d")!;
   canvas.width = 6144;
   canvas.height = 1536;
 
-  ctx.fillStyle = "white";
-  ctx.font = "600 480px 'Jost', 'Futura', 'Century Gothic', sans-serif";
+  const font = "600 480px 'Jost', 'Futura', 'Century Gothic', sans-serif";
+  ctx.font = font;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
+
+  // Measure "The Eli " to find where "Design" starts
+  const fullText = text;
+  const prefixText = "The Eli ";
+  const fullWidth = ctx.measureText(fullText).width;
+  const prefixWidth = ctx.measureText(prefixText).width;
+  // "Design" starts at this x offset from center
+  const designStartX = canvas.width / 2 - fullWidth / 2 + prefixWidth;
+
+  ctx.fillStyle = "white";
   ctx.fillText(text, canvas.width / 2, canvas.height / 2);
 
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  const pixels: [number, number, number][] = []; // x, y, alpha
+  const pixels: [number, number, number][] = []; // x, y, region (0=TheEli, 1=Design)
 
   for (let y = 0; y < canvas.height; y += 1) {
     for (let x = 0; x < canvas.width; x += 1) {
       const i = (y * canvas.width + x) * 4;
       const alpha = imageData.data[i + 3];
       if (alpha > 100) {
+        const region = x >= designStartX ? 1 : 0;
         pixels.push([
           (x - canvas.width / 2) * 0.002,
           -(y - canvas.height / 2) * 0.002,
-          alpha / 255,
+          region,
         ]);
       }
     }
@@ -78,21 +89,23 @@ function getTextParticles(text: string, count: number): { positions: Float32Arra
     [pixels[i], pixels[j]] = [pixels[j], pixels[i]];
   }
 
-  const EXTRUDE_DEPTH = 0.35; // 3D extrusion depth
-  const LAYERS = 6; // number of depth layers
+  const EXTRUDE_DEPTH = 0.35;
+  const LAYERS = 6;
 
   const positions = new Float32Array(count * 3);
-  const depths = new Float32Array(count); // 0 = front face, 1 = back face
+  const depths = new Float32Array(count);
+  const regions = new Float32Array(count);
   for (let i = 0; i < count; i++) {
     const idx = i % pixels.length;
     const layer = Math.floor(Math.random() * LAYERS);
-    const depthT = layer / (LAYERS - 1); // 0 to 1
+    const depthT = layer / (LAYERS - 1);
     positions[i * 3] = pixels[idx][0];
     positions[i * 3 + 1] = pixels[idx][1];
-    positions[i * 3 + 2] = -depthT * EXTRUDE_DEPTH; // extrude backward
+    positions[i * 3 + 2] = -depthT * EXTRUDE_DEPTH;
     depths[i] = depthT;
+    regions[i] = pixels[idx][2];
   }
-  return { positions, depths };
+  return { positions, depths, regions };
 }
 
 const PARTICLE_COUNT = 40000;
@@ -101,8 +114,8 @@ function ParticleSystem({ progress }: { progress: number }) {
   const pointsRef = useRef<THREE.Points>(null!);
   const materialRef = useRef<THREE.ShaderMaterial>(null!);
 
-  const { targetPositions, targetDepths, initialPositions, randomVelocities } = useMemo(() => {
-    const { positions: target, depths } = getTextParticles("The Eli Design", PARTICLE_COUNT);
+  const { targetPositions, targetDepths, targetRegions, initialPositions, randomVelocities } = useMemo(() => {
+    const { positions: target, depths, regions } = getTextParticles("The Eli Design", PARTICLE_COUNT);
     const initial = new Float32Array(PARTICLE_COUNT * 3);
     const velocities = new Float32Array(PARTICLE_COUNT * 3);
 
@@ -118,7 +131,7 @@ function ParticleSystem({ progress }: { progress: number }) {
       velocities[i * 3 + 1] = (Math.random() - 0.5) * 0.02;
       velocities[i * 3 + 2] = (Math.random() - 0.5) * 0.02;
     }
-    return { targetPositions: target, targetDepths: depths, initialPositions: initial, randomVelocities: velocities };
+    return { targetPositions: target, targetDepths: depths, targetRegions: regions, initialPositions: initial, randomVelocities: velocities };
   }, []);
 
   const currentPositions = useMemo(() => new Float32Array(PARTICLE_COUNT * 3), []);
@@ -135,14 +148,17 @@ function ParticleSystem({ progress }: { progress: number }) {
       uniforms: {
         uTime: { value: 0 },
         uProgress: { value: 0 },
-        uColor1: { value: new THREE.Color("#cc2222") },
-        uColor2: { value: new THREE.Color("#cc4422") },
-        uColor3: { value: new THREE.Color("#dddddd") },
+        uColor1: { value: new THREE.Color("#552222") },
+        uColor2: { value: new THREE.Color("#443333") },
+        uColor3: { value: new THREE.Color("#888888") },
+        uDesignColor: { value: new THREE.Color("#ee1111") },
+        uDesignHighlight: { value: new THREE.Color("#ff4444") },
         uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) },
       },
       vertexShader: `
         attribute float aSize;
         attribute float aDepth;
+        attribute float aRegion;
         uniform float uTime;
         uniform float uProgress;
         uniform float uPixelRatio;
@@ -150,18 +166,16 @@ function ParticleSystem({ progress }: { progress: number }) {
         varying float vColorMix;
         varying float vDepth;
         varying float vLighting;
+        varying float vRegion;
 
         void main() {
           vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
           float dist = length(position.xy);
           
           vDepth = aDepth;
+          vRegion = aRegion;
           
-          // Directional lighting from top-right-front
-          vec3 lightDir = normalize(vec3(0.5, 0.8, 1.0));
-          // Front face gets full light, sides get less
           float facingLight = mix(1.0, 0.3, aDepth);
-          // Add subtle top-down gradient lighting
           float topLight = smoothstep(-2.0, 2.0, position.y) * 0.3;
           vLighting = facingLight + topLight;
           
@@ -175,10 +189,13 @@ function ParticleSystem({ progress }: { progress: number }) {
         uniform vec3 uColor1;
         uniform vec3 uColor2;
         uniform vec3 uColor3;
+        uniform vec3 uDesignColor;
+        uniform vec3 uDesignHighlight;
         varying float vAlpha;
         varying float vColorMix;
         varying float vDepth;
         varying float vLighting;
+        varying float vRegion;
 
         void main() {
           vec2 uv = gl_PointCoord;
@@ -186,17 +203,23 @@ function ParticleSystem({ progress }: { progress: number }) {
           float edgeY = smoothstep(0.0, 0.05, uv.y) * smoothstep(1.0, 0.95, uv.y);
           float alpha = edgeX * edgeY * vAlpha;
           
-          vec3 color = mix(uColor1, uColor2, vColorMix);
-          color = mix(color, uColor3, smoothstep(0.7, 1.0, vColorMix));
+          // "The Eli" = dark muted tones
+          vec3 baseColor = mix(uColor1, uColor2, vColorMix);
+          baseColor = mix(baseColor, uColor3, smoothstep(0.7, 1.0, vColorMix));
           
-          // Apply 3D lighting — front face bright, back face dark
+          // "Design" = bright red
+          vec3 designColor = mix(uDesignColor, uDesignHighlight, vColorMix * 0.5);
+          
+          // Blend based on region
+          vec3 color = mix(baseColor, designColor, vRegion);
+          
+          // 3D lighting
           color *= vLighting;
-          
-          // Darken deeper layers for depth
           color *= mix(1.0, 0.35, vDepth);
+          color += vec3(0.02);
           
-          // Slight ambient so back isn't pure black
-          color += vec3(0.03);
+          // Boost "Design" alpha slightly for extra pop
+          alpha *= mix(1.0, 1.3, vRegion);
           
           gl_FragColor = vec4(color, alpha);
         }
@@ -253,6 +276,12 @@ function ParticleSystem({ progress }: { progress: number }) {
           attach="attributes-aDepth"
           count={PARTICLE_COUNT}
           array={targetDepths}
+          itemSize={1}
+        />
+        <bufferAttribute
+          attach="attributes-aRegion"
+          count={PARTICLE_COUNT}
+          array={targetRegions}
           itemSize={1}
         />
       </bufferGeometry>
