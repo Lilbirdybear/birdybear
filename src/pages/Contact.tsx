@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import Navbar from "@/components/Navbar";
 import FooterSection from "@/components/FooterSection";
 import { z } from "zod";
 
