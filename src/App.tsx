@@ -91,8 +91,10 @@ const App = () => {
           <div
             style={{
               opacity: isLoading ? 0 : 1,
-              transition: "opacity 1.2s cubic-bezier(0.23, 1, 0.32, 1)",
-              willChange: isLoading ? "opacity" : "auto",
+              transform: isLoading ? "scale(1.08)" : "scale(1)",
+              filter: isLoading ? "blur(8px) brightness(1.5)" : "blur(0px) brightness(1)",
+              transition: "opacity 1.4s cubic-bezier(0.23, 1, 0.32, 1), transform 1.6s cubic-bezier(0.23, 1, 0.32, 1), filter 1.4s cubic-bezier(0.23, 1, 0.32, 1)",
+              willChange: isLoading ? "opacity, transform, filter" : "auto",
             }}
           >
             {showEffects && (
