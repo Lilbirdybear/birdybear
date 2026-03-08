@@ -1,22 +1,21 @@
-import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
+
+const toolCards = [
+  { cls: "compartment-ixd glow-ixd", label: "TOOLS — IXD", labelColor: "text-ixd", tools: "Figma, Framer, Principle, Adobe XD, ProtoPie" },
+  { cls: "compartment-3d glow-3d", label: "TOOLS — 3D", labelColor: "text-three-d", tools: "Blender, ZBrush, Substance Painter, Cinema 4D, Maya" },
+  { cls: "compartment-game glow-game", label: "TOOLS — GAME", labelColor: "text-game", tools: "Unreal Engine, Unity, Godot, Game Maker" },
+];
 
 const AboutSection = () => {
-  const sectionRef = useRef<HTMLElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setVisible(true); },
-      { threshold: 0.15 }
-    );
-    if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => observer.disconnect();
-  }, []);
-
   return (
-    <section ref={sectionRef} className="py-32 px-6 border-t border-border perspective-container">
+    <section className="py-32 px-6 border-t border-border">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16">
-        <div className={`transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
+        <motion.div
+          initial={{ opacity: 0, y: 50, rotateX: 8 }}
+          whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
           <span className="font-mono text-xs tracking-[0.3em] uppercase text-muted-foreground block mb-4">
             // ABOUT
           </span>
@@ -31,26 +30,26 @@ const AboutSection = () => {
             Each discipline informs the others: game mechanics sharpen my UX thinking, 
             3D skills add depth to interfaces, and interaction design brings polish to game experiences.
           </p>
-        </div>
+        </motion.div>
 
         <div className="space-y-6">
-          {[
-            { cls: "compartment-ixd glow-ixd", label: "TOOLS — IXD", labelColor: "text-ixd", tools: "Figma, Framer, Principle, Adobe XD, ProtoPie", delay: 0.1 },
-            { cls: "compartment-3d glow-3d", label: "TOOLS — 3D", labelColor: "text-three-d", tools: "Blender, ZBrush, Substance Painter, Cinema 4D, Maya", delay: 0.25 },
-            { cls: "compartment-game glow-game", label: "TOOLS — GAME", labelColor: "text-game", tools: "Unreal Engine, Unity, Godot, Game Maker", delay: 0.4 },
-          ].map((item) => (
-            <div
+          {toolCards.map((item, i) => (
+            <motion.div
               key={item.label}
-              className={`glass-panel p-6 ${item.cls} tilt-card ${visible ? "opacity-100" : "opacity-0"}`}
-              style={{
-                transition: "all 0.7s cubic-bezier(0.23, 1, 0.32, 1)",
-                transitionDelay: visible ? `${item.delay}s` : "0s",
-                transform: visible ? undefined : "perspective(800px) rotateY(-10deg) translateX(-30px)",
+              className={`glass-panel p-6 ${item.cls} tilt-card`}
+              initial={{ opacity: 0, x: 60, rotateY: -12 }}
+              whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ delay: i * 0.15, duration: 0.7, ease: [0.23, 1, 0.32, 1] }}
+              whileHover={{
+                scale: 1.03,
+                rotateY: 3,
+                transition: { duration: 0.3 },
               }}
             >
               <h4 className={`font-mono text-xs tracking-wider ${item.labelColor} mb-3`}>{item.label}</h4>
               <p className="text-sm text-muted-foreground">{item.tools}</p>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>

@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 type Filter = "all" | "ixd" | "3d" | "game";
 
@@ -27,22 +28,17 @@ const categoryDot: Record<string, string> = {
 const ProjectsSection = () => {
   const [active, setActive] = useState<Filter>("all");
   const filtered = active === "all" ? projects : projects.filter((p) => p.category === active);
-  const sectionRef = useRef<HTMLElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setVisible(true); },
-      { threshold: 0.1 }
-    );
-    if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => observer.disconnect();
-  }, []);
 
   return (
-    <section ref={sectionRef} className="py-32 px-6 border-t border-border perspective-container">
+    <section className="py-32 px-6 border-t border-border">
       <div className="max-w-6xl mx-auto">
-        <div className={`flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6 transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
+        <motion.div
+          className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6"
+          initial={{ opacity: 0, y: 40, rotateX: 6 }}
+          whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 0.7 }}
+        >
           <div>
             <span className="font-mono text-xs tracking-[0.3em] uppercase text-muted-foreground block mb-4">
               // SELECTED WORK
@@ -56,50 +52,55 @@ const ProjectsSection = () => {
                 key={f.value}
                 onClick={() => setActive(f.value)}
                 className={`font-mono text-xs tracking-wider px-4 py-2 transition-all duration-300 ${
-                  active === f.value
-                    ? `${f.color} glass-panel`
-                    : "text-muted-foreground hover:text-foreground"
+                  active === f.value ? `${f.color} glass-panel` : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {f.label}
               </button>
             ))}
           </div>
-        </div>
+        </motion.div>
 
-        {/* Project list */}
         <div className="space-y-px">
-          {filtered.map((project, i) => (
-            <div
-              key={project.id}
-              className={`group flex items-center justify-between p-6 glass-panel border border-border hover:border-primary/20 transition-all duration-500 cursor-pointer tilt-card ${visible ? "opacity-100" : "opacity-0"}`}
-              style={{
-                transitionDelay: visible ? `${i * 0.08}s` : "0s",
-                transform: visible ? undefined : "perspective(800px) rotateX(8deg) translateY(20px)",
-              }}
-            >
-              <div className="flex items-center gap-4">
-                <div className={`w-2 h-2 rounded-full ${categoryDot[project.category]}`} />
-                <h3 className="text-lg font-medium text-foreground group-hover:text-primary transition-colors">
-                  {project.title}
-                </h3>
-              </div>
-
-              <div className="flex items-center gap-6">
-                <div className="hidden md:flex gap-2">
-                  {project.tags.map((tag) => (
-                    <span key={tag} className="font-mono text-[10px] tracking-wider text-muted-foreground px-2 py-1 border border-border rounded-sm">
-                      {tag}
-                    </span>
-                  ))}
+          <AnimatePresence mode="popLayout">
+            {filtered.map((project, i) => (
+              <motion.div
+                key={project.id}
+                layout
+                initial={{ opacity: 0, x: -40, rotateY: -5 }}
+                animate={{ opacity: 1, x: 0, rotateY: 0 }}
+                exit={{ opacity: 0, x: 40, rotateY: 5 }}
+                transition={{ delay: i * 0.06, duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+                whileHover={{
+                  scale: 1.01,
+                  x: 6,
+                  transition: { duration: 0.25 },
+                }}
+                className="group flex items-center justify-between p-6 glass-panel border border-border hover:border-primary/20 cursor-pointer"
+              >
+                <div className="flex items-center gap-4">
+                  <div className={`w-2 h-2 rounded-full ${categoryDot[project.category]}`} />
+                  <h3 className="text-lg font-medium text-foreground group-hover:text-primary transition-colors">
+                    {project.title}
+                  </h3>
                 </div>
-                <span className="font-mono text-xs text-muted-foreground">{project.year}</span>
-                <svg className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-all group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
-                </svg>
-              </div>
-            </div>
-          ))}
+
+                <div className="flex items-center gap-6">
+                  <div className="hidden md:flex gap-2">
+                    {project.tags.map((tag) => (
+                      <span key={tag} className="font-mono text-[10px] tracking-wider text-muted-foreground px-2 py-1 border border-border rounded-sm">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  <span className="font-mono text-xs text-muted-foreground">{project.year}</span>
+                  <svg className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-all group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
       </div>
     </section>
