@@ -152,7 +152,7 @@ function ParticleSystem({ progress }: { progress: number }) {
           float dist = length(position.xy);
           vAlpha = smoothstep(0.0, 0.3, uProgress) * (0.6 + 0.4 * sin(uTime * 2.0 + dist * 0.5));
           vColorMix = sin(position.x * 0.3 + uTime) * 0.5 + 0.5;
-          gl_PointSize = aSize * uPixelRatio * (1.0 + 0.3 * sin(uTime * 3.0 + dist)) * (300.0 / -mvPosition.z);
+          gl_PointSize = aSize * uPixelRatio * (1.0 + 0.15 * sin(uTime * 3.0 + dist)) * (200.0 / -mvPosition.z);
           gl_Position = projectionMatrix * mvPosition;
         }
       `,
