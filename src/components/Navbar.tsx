@@ -63,8 +63,16 @@ const Navbar = () => {
       >
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <Magnetic strength={0.2}>
-            <Link to="/" className="font-mono text-sm tracking-[0.15em] text-foreground font-medium cursor-magnetic group">
-              ELI<span className="text-primary group-hover:animate-pulse">.</span>
+            <Link to="/" className="flex items-center gap-2 cursor-magnetic group">
+              <div className="w-8 h-8 relative">
+                <Suspense fallback={
+                  <span className="font-mono text-sm tracking-[0.15em] text-foreground font-medium">
+                    ELI<span className="text-primary group-hover:animate-pulse">.</span>
+                  </span>
+                }>
+                  <LogoCube className="w-full h-full" />
+                </Suspense>
+              </div>
             </Link>
           </Magnetic>
 
