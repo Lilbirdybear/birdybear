@@ -235,10 +235,11 @@ const LoadingScreen = ({ isLoading }: LoadingScreenProps) => {
           transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
         >
           <Canvas
-            camera={{ position: [0, 0, 10], fov: 50 }}
+            camera={{ position: [0, 0, 14], fov: 50 }}
             dpr={[1, 2]}
             style={{ position: "absolute", inset: 0 }}
           >
+            <CameraRig progress={progress} />
             <ParticleSystem progress={progress} />
           </Canvas>
 
