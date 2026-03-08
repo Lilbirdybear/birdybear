@@ -73,15 +73,15 @@ const ParticleText = ({ text, subtext, className = "" }: ParticleTextProps) => {
           const px = x / dpr;
           const py = y / dpr;
           particles.push({
-            x: px + (Math.random() - 0.5) * 600,
-            y: py + (Math.random() - 0.5) * 600,
+            x: px + (Math.random() - 0.5) * 500,
+            y: py + (Math.random() - 0.5) * 500,
             originX: px,
             originY: py,
-            vx: (Math.random() - 0.5) * 4,
-            vy: (Math.random() - 0.5) * 4,
-            size: Math.random() * 2 + 0.8,
+            vx: (Math.random() - 0.5) * 2,
+            vy: (Math.random() - 0.5) * 2,
+            size: Math.random() * 1.8 + 0.6,
             color: colors[Math.floor(Math.random() * colors.length)],
-            opacity: Math.random() * 0.5 + 0.5,
+            opacity: Math.random() * 0.4 + 0.5,
             life: Math.random() * Math.PI * 2,
           });
         }
@@ -117,6 +117,7 @@ const ParticleText = ({ text, subtext, className = "" }: ParticleTextProps) => {
     };
 
     const handleLeave = () => {
+      // Smoothly reset instead of snapping
       mouseRef.current.x = -1000;
       mouseRef.current.y = -1000;
     };
@@ -124,21 +125,20 @@ const ParticleText = ({ text, subtext, className = "" }: ParticleTextProps) => {
     const handleDown = () => { mouseRef.current.down = true; };
     const handleUp = () => { mouseRef.current.down = false; };
 
-    // Click explosion
     const handleClick = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
       const cx = e.clientX - rect.left;
       const cy = e.clientY - rect.top;
       const particles = particlesRef.current;
-      const EXPLODE_RADIUS = 200;
+      const EXPLODE_RADIUS = 180;
 
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
         const dx = p.x - cx;
         const dy = p.y - cy;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < EXPLODE_RADIUS) {
-          const force = ((EXPLODE_RADIUS - dist) / EXPLODE_RADIUS) * 18;
+        if (dist < EXPLODE_RADIUS && dist > 0) {
+          const force = ((EXPLODE_RADIUS - dist) / EXPLODE_RADIUS) * 10;
           const angle = Math.atan2(dy, dx);
           p.vx += Math.cos(angle) * force;
           p.vy += Math.sin(angle) * force;
@@ -146,10 +146,12 @@ const ParticleText = ({ text, subtext, className = "" }: ParticleTextProps) => {
       }
     };
 
-    const HOVER_RADIUS = 140;
-    const DRAG_RADIUS = 100;
-    const RETURN_SPEED = 0.045;
-    const FRICTION = 0.93;
+    // Smooth, organic physics — inspired by unshift.jp
+    const HOVER_RADIUS = 160;
+    const DRAG_RADIUS = 130;
+    const RETURN_SPRING = 0.015;   // Very gentle spring — slow, elastic return
+    const FRICTION = 0.965;         // High friction = smooth deceleration, no jitter
+    const REPEL_STRENGTH = 1.8;     // Gentle push, not harsh snap
 
     const draw = () => {
       if (!ctx || !canvas) return;
@@ -162,112 +164,110 @@ const ParticleText = ({ text, subtext, className = "" }: ParticleTextProps) => {
       const mouse = mouseRef.current;
       const particles = particlesRef.current;
 
-      // Mouse velocity for swirl
       const mouseVX = mouse.x - mouse.prevX;
       const mouseVY = mouse.y - mouse.prevY;
       const mouseSpeed = Math.sqrt(mouseVX * mouseVX + mouseVY * mouseVY);
 
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
-        p.life += 0.018;
+        p.life += 0.012;
 
         const dx = mouse.x - p.x;
         const dy = mouse.y - p.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
-        if (mouse.down && dist < DRAG_RADIUS) {
-          // Vortex swirl when dragging
-          const force = ((DRAG_RADIUS - dist) / DRAG_RADIUS) * 4;
+        if (mouse.down && dist < DRAG_RADIUS && dist > 0) {
+          // Smooth vortex — gentle tangential + radial
+          const force = ((DRAG_RADIUS - dist) / DRAG_RADIUS);
           const angle = Math.atan2(dy, dx);
-          // Tangential force for swirl + slight attraction
-          p.vx += (-Math.sin(angle) * force * 0.8 + Math.cos(angle) * force * 0.3);
-          p.vy += (Math.cos(angle) * force * 0.8 + Math.sin(angle) * force * 0.3);
-        } else if (dist < HOVER_RADIUS) {
-          // Repel on hover
-          const force = ((HOVER_RADIUS - dist) / HOVER_RADIUS);
+          const easedForce = force * force * 2; // Quadratic easing for smooth falloff
+          p.vx += (-Math.sin(angle) * easedForce * 0.6 + Math.cos(angle) * easedForce * 0.2);
+          p.vy += (Math.cos(angle) * easedForce * 0.6 + Math.sin(angle) * easedForce * 0.2);
+        } else if (dist < HOVER_RADIUS && dist > 0) {
+          // Smooth repulsion with quadratic falloff
+          const t = (HOVER_RADIUS - dist) / HOVER_RADIUS;
+          const easedT = t * t; // Smooth quadratic curve
           const angle = Math.atan2(dy, dx);
-          const repelStrength = 4 + mouseSpeed * 0.5;
-          p.vx -= Math.cos(angle) * force * repelStrength;
-          p.vy -= Math.sin(angle) * force * repelStrength;
+          const strength = REPEL_STRENGTH + mouseSpeed * 0.08;
+          p.vx -= Math.cos(angle) * easedT * strength;
+          p.vy -= Math.sin(angle) * easedT * strength;
 
-          // Transfer mouse momentum to particles
-          if (mouseSpeed > 2) {
-            p.vx += mouseVX * force * 0.15;
-            p.vy += mouseVY * force * 0.15;
+          // Subtle momentum transfer from mouse movement
+          if (mouseSpeed > 1) {
+            p.vx += mouseVX * easedT * 0.06;
+            p.vy += mouseVY * easedT * 0.06;
           }
         }
 
-        // Return to origin
-        p.vx += (p.originX - p.x) * RETURN_SPEED;
-        p.vy += (p.originY - p.y) * RETURN_SPEED;
+        // Gentle spring return — creates that elastic, organic feel
+        const toOriginX = p.originX - p.x;
+        const toOriginY = p.originY - p.y;
+        p.vx += toOriginX * RETURN_SPRING;
+        p.vy += toOriginY * RETURN_SPRING;
 
+        // Smooth friction
         p.vx *= FRICTION;
         p.vy *= FRICTION;
 
         p.x += p.vx;
         p.y += p.vy;
 
-        // Displacement metrics
-        const distFromOrigin = Math.sqrt((p.x - p.originX) ** 2 + (p.y - p.originY) ** 2);
-        const displaced = Math.min(distFromOrigin / 50, 1);
+        // Visual feedback
+        const distFromOrigin = Math.sqrt(toOriginX * toOriginX + toOriginY * toOriginY);
+        const displaced = Math.min(distFromOrigin / 60, 1);
         const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
-        const speedFactor = Math.min(speed / 8, 1);
 
-        const pulseAlpha = p.opacity * (0.7 + 0.3 * Math.sin(p.life));
-        const finalAlpha = Math.min(pulseAlpha + displaced * 0.4, 1);
+        const pulseAlpha = p.opacity * (0.75 + 0.25 * Math.sin(p.life));
+        const finalAlpha = Math.min(pulseAlpha + displaced * 0.25, 1);
 
-        // Outer glow when displaced or fast
-        if (displaced > 0.08 || speedFactor > 0.1) {
-          const glowSize = p.size + 3 + displaced * 4 + speedFactor * 2;
-          const glowAlpha = Math.max(displaced, speedFactor) * 0.1;
+        // Soft glow halo when displaced
+        if (displaced > 0.1) {
           ctx.beginPath();
-          ctx.arc(p.x, p.y, glowSize, 0, Math.PI * 2);
-          ctx.fillStyle = `${p.color}${glowAlpha.toFixed(3)})`;
+          ctx.arc(p.x, p.y, p.size + 2 + displaced * 3, 0, Math.PI * 2);
+          ctx.fillStyle = `${p.color}${(displaced * 0.06).toFixed(3)})`;
           ctx.fill();
         }
 
-        // Motion trail when fast
-        if (speed > 3) {
-          const trailAlpha = speedFactor * 0.15;
+        // Subtle motion trail
+        if (speed > 1.5) {
+          const trailAlpha = Math.min(speed / 15, 0.12);
           ctx.beginPath();
           ctx.moveTo(p.x, p.y);
-          ctx.lineTo(p.x - p.vx * 2, p.y - p.vy * 2);
+          ctx.lineTo(p.x - p.vx * 2.5, p.y - p.vy * 2.5);
           ctx.strokeStyle = `${p.color}${trailAlpha.toFixed(3)})`;
-          ctx.lineWidth = p.size * 0.6;
+          ctx.lineWidth = p.size * 0.5;
           ctx.stroke();
         }
 
         // Main particle
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size + displaced * 0.8, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, p.size + displaced * 0.5, 0, Math.PI * 2);
         ctx.fillStyle = `${p.color}${finalAlpha.toFixed(3)})`;
         ctx.fill();
       }
 
-      // Connections between displaced particles near mouse
-      const connRadius = 35;
+      // Elegant connections — only between nearby displaced particles
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
         const pDist = Math.sqrt((p.x - p.originX) ** 2 + (p.y - p.originY) ** 2);
-        if (pDist < 4) continue;
-
+        if (pDist < 5) continue;
         const pMouseDist = Math.sqrt((p.x - mouse.x) ** 2 + (p.y - mouse.y) ** 2);
-        if (pMouseDist > 200) continue;
+        if (pMouseDist > 180) continue;
 
         for (let j = i + 1; j < particles.length; j++) {
           const q = particles[j];
           const qDist = Math.sqrt((q.x - q.originX) ** 2 + (q.y - q.originY) ** 2);
-          if (qDist < 4) continue;
+          if (qDist < 5) continue;
 
           const ddx = p.x - q.x;
           const ddy = p.y - q.y;
           const dd = Math.sqrt(ddx * ddx + ddy * ddy);
-          if (dd < connRadius) {
+          if (dd < 30) {
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(q.x, q.y);
-            ctx.strokeStyle = `rgba(28, 210, 224, ${0.12 * (1 - dd / connRadius)})`;
-            ctx.lineWidth = 0.6;
+            ctx.strokeStyle = `rgba(28, 210, 224, ${0.08 * (1 - dd / 30)})`;
+            ctx.lineWidth = 0.5;
             ctx.stroke();
           }
         }
