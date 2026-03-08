@@ -4,6 +4,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
+import ParticleField from "@/components/ParticleField";
+import CursorGlow from "@/components/CursorGlow";
+import ScrollProgress from "@/components/ScrollProgress";
 import Index from "./pages/Index";
 import Admin from "./pages/Admin";
 import AdminLogin from "./pages/AdminLogin";
@@ -21,6 +24,9 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
+        <ParticleField />
+        <CursorGlow />
+        <ScrollProgress />
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
