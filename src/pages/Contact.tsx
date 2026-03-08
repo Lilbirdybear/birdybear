@@ -80,8 +80,8 @@ const Contact = () => {
               <div className="space-y-4">
                 <div className="glass-panel p-4">
                   <p className="font-mono text-xs text-muted-foreground mb-1">EMAIL</p>
-                  <a href="mailto:hello@theeligesign.com" className="text-primary hover:text-primary/80 transition-colors text-sm">
-                    hello@theeligesign.com
+                  <a href="mailto:eli.birdsall@daydreamingknights.com" className="text-primary hover:text-primary/80 transition-colors text-sm">
+                    eli.birdsall@daydreamingknights.com
                   </a>
                 </div>
                 <div className="glass-panel p-4">
