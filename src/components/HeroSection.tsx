@@ -135,6 +135,18 @@ const HeroSection = () => {
           <ParticleText text="The Eli" subtext="Design" className="mb-4" />
         </motion.div>
 
+        {/* Interactive 3D Logo Cube */}
+        <motion.div
+          className="w-40 h-40 md:w-52 md:h-52 mx-auto mb-8"
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.8, duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
+        >
+          <Suspense fallback={null}>
+            <LogoCube className="w-full h-full" />
+          </Suspense>
+        </motion.div>
+
         {/* Discipline tags */}
         <motion.div
           className="flex items-center justify-center gap-6 md:gap-10 mb-14"
