@@ -71,16 +71,13 @@ const Cube = () => {
       <Float speed={2} rotationIntensity={0.3} floatIntensity={0.5}>
         <mesh ref={meshRef}>
           <boxGeometry args={[2, 2, 2]} />
-          <meshPhysicalMaterial
+          <meshStandardMaterial
             map={texture}
-            color="#ffffff"
-            metalness={0.1}
-            roughness={0.2}
-            clearcoat={1}
-            clearcoatRoughness={0.1}
-            envMapIntensity={1.2}
-            emissive="#334455"
-            emissiveIntensity={0.15}
+            color="#111111"
+            metalness={0.6}
+            roughness={0.3}
+            emissive="#ffffff"
+            emissiveIntensity={0.08}
           />
         </mesh>
       </Float>
