@@ -267,9 +267,9 @@ const LoadingScreen = ({ isLoading }: LoadingScreenProps) => {
             <ParticleSystem progress={progress} />
             <EffectComposer>
               <Bloom
-                intensity={0.4}
-                luminanceThreshold={0.3}
-                luminanceSmoothing={0.4}
+                intensity={0.2}
+                luminanceThreshold={0.5}
+                luminanceSmoothing={0.3}
                 mipmapBlur
               />
             </EffectComposer>
