@@ -1,5 +1,17 @@
 import { useEffect, useRef } from "react";
 
+interface Star {
+  x: number;
+  y: number;
+  size: number;
+  baseOpacity: number;
+  opacity: number;
+  twinkleSpeed: number;
+  twinkleOffset: number;
+  // Some stars will be "bright" with a subtle glow
+  bright: boolean;
+}
+
 const ParticleField = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -10,130 +22,106 @@ const ParticleField = () => {
     if (!ctx) return;
 
     let animationId: number;
-    let mouse = { x: -1000, y: -1000, down: false };
-    let particles: {
-      x: number; y: number; vx: number; vy: number;
-      baseSize: number; size: number; opacity: number; pulse: number;
-      originX: number; originY: number;
-    }[] = [];
-
-    const INTERACTION_RADIUS = 200;
-    const CONNECTION_RADIUS = 120;
-    const MOUSE_CONNECTION_RADIUS = 250;
+    let stars: Star[] = [];
+    let mouse = { x: -1000, y: -1000 };
+    let time = 0;
 
     const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      canvas.style.width = `${window.innerWidth}px`;
+      canvas.style.height = `${window.innerHeight}px`;
+      ctx.scale(dpr, dpr);
+      createStars();
     };
 
-    const createParticles = () => {
-      const count = Math.floor((canvas.width * canvas.height) / 12000);
-      particles = Array.from({ length: count }, () => {
-        const x = Math.random() * canvas.width;
-        const y = Math.random() * canvas.height;
+    const createStars = () => {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      const area = w * h;
+      // Dense star count like chronark — lots of tiny dots
+      const count = Math.floor(area / 3000);
+
+      stars = Array.from({ length: count }, () => {
+        const bright = Math.random() < 0.08; // 8% are brighter stars
         return {
-          x, y,
-          originX: x, originY: y,
-          vx: (Math.random() - 0.5) * 0.4,
-          vy: (Math.random() - 0.5) * 0.4,
-          baseSize: Math.random() * 1.5 + 0.5,
-          size: Math.random() * 1.5 + 0.5,
-          opacity: Math.random() * 0.5 + 0.1,
-          pulse: Math.random() * Math.PI * 2,
+          x: Math.random() * w,
+          y: Math.random() * h,
+          size: bright
+            ? Math.random() * 1.8 + 0.8  // bright stars: 0.8-2.6px
+            : Math.random() * 0.8 + 0.2,  // dim stars: 0.2-1.0px
+          baseOpacity: bright
+            ? Math.random() * 0.5 + 0.4   // bright: 0.4-0.9
+            : Math.random() * 0.3 + 0.05, // dim: 0.05-0.35
+          opacity: 0,
+          twinkleSpeed: Math.random() * 0.008 + 0.002, // Very slow twinkle
+          twinkleOffset: Math.random() * Math.PI * 2,
+          bright,
         };
       });
     };
 
     const draw = () => {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      const dpr = window.devicePixelRatio || 1;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.scale(dpr, dpr);
 
-      // Primary color from CSS: hsl(185 90% 55%) ≈ rgb(28, 210, 224)
-      const pr = 28, pg = 210, pb = 224;
+      time += 1;
 
-      particles.forEach((p) => {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.pulse += 0.02;
+      // Subtle radial vignette gradient from center
+      const grd = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w * 0.7);
+      grd.addColorStop(0, "rgba(28, 210, 224, 0.008)");
+      grd.addColorStop(1, "transparent");
+      ctx.fillStyle = grd;
+      ctx.fillRect(0, 0, w, h);
 
-        // Wrap
-        if (p.x < 0) p.x = canvas.width;
-        if (p.x > canvas.width) p.x = 0;
-        if (p.y < 0) p.y = canvas.height;
-        if (p.y > canvas.height) p.y = 0;
+      for (let i = 0; i < stars.length; i++) {
+        const s = stars[i];
 
-        // Mouse repulsion / attraction
-        const dx = mouse.x - p.x;
-        const dy = mouse.y - p.y;
+        // Twinkle: smooth sine-based opacity oscillation
+        const twinkle = Math.sin(time * s.twinkleSpeed + s.twinkleOffset);
+        // Some stars occasionally "flash" brighter
+        const flash = Math.sin(time * s.twinkleSpeed * 3.7 + s.twinkleOffset * 2.1);
+        const flashBoost = flash > 0.95 ? (flash - 0.95) * 8 : 0;
+
+        s.opacity = s.baseOpacity * (0.5 + 0.5 * twinkle) + flashBoost * 0.15;
+
+        // Subtle mouse proximity brightening
+        const dx = mouse.x - s.x;
+        const dy = mouse.y - s.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
-
-        if (dist < INTERACTION_RADIUS) {
-          const force = (INTERACTION_RADIUS - dist) / INTERACTION_RADIUS;
-          if (mouse.down) {
-            // Attract on click
-            p.vx += (dx / dist) * force * 0.08;
-            p.vy += (dy / dist) * force * 0.08;
-          } else {
-            // Repel on hover
-            p.vx -= (dx / dist) * force * 0.04;
-            p.vy -= (dy / dist) * force * 0.04;
-          }
-          // Grow near cursor
-          p.size = p.baseSize + (1 - dist / INTERACTION_RADIUS) * 2;
-        } else {
-          p.size += (p.baseSize - p.size) * 0.05;
+        if (dist < 200) {
+          const proximity = (200 - dist) / 200;
+          s.opacity += proximity * 0.25;
         }
 
-        // Dampen & gentle drift back
-        p.vx *= 0.985;
-        p.vy *= 0.985;
+        s.opacity = Math.min(s.opacity, 1);
 
-        const pulseOpacity = p.opacity * (0.6 + 0.4 * Math.sin(p.pulse));
+        if (s.opacity < 0.01) continue;
 
-        // Glow near cursor
-        const glowStrength = dist < INTERACTION_RADIUS ? (1 - dist / INTERACTION_RADIUS) * 0.6 : 0;
-
-        if (glowStrength > 0.05) {
+        // Draw glow for bright stars
+        if (s.bright && s.opacity > 0.3) {
           ctx.beginPath();
-          ctx.arc(p.x, p.y, p.size + 3, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(${pr}, ${pg}, ${pb}, ${glowStrength * 0.15})`;
+          ctx.arc(s.x, s.y, s.size + 2, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(200, 220, 255, ${s.opacity * 0.06})`;
           ctx.fill();
         }
 
+        // Main star dot
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        const r = Math.round(255 + (pr - 255) * glowStrength);
-        const g = Math.round(255 + (pg - 255) * glowStrength);
-        const b = Math.round(255 + (pb - 255) * glowStrength);
-        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${pulseOpacity + glowStrength * 0.3})`;
-        ctx.fill();
-      });
-
-      // Draw connections — brighter near cursor
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < CONNECTION_RADIUS) {
-            const midX = (particles[i].x + particles[j].x) / 2;
-            const midY = (particles[i].y + particles[j].y) / 2;
-            const mouseDist = Math.sqrt((mouse.x - midX) ** 2 + (mouse.y - midY) ** 2);
-            const nearMouse = mouseDist < MOUSE_CONNECTION_RADIUS;
-            const baseAlpha = 0.04 * (1 - dist / CONNECTION_RADIUS);
-            const alpha = nearMouse
-              ? baseAlpha + (1 - mouseDist / MOUSE_CONNECTION_RADIUS) * 0.12
-              : baseAlpha;
-
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = nearMouse
-              ? `rgba(${pr}, ${pg}, ${pb}, ${alpha})`
-              : `rgba(255, 255, 255, ${alpha})`;
-            ctx.lineWidth = nearMouse ? 0.8 : 0.5;
-            ctx.stroke();
-          }
+        ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+        // Slightly warm/cool color variation
+        if (s.bright) {
+          ctx.fillStyle = `rgba(220, 235, 255, ${s.opacity})`;
+        } else {
+          ctx.fillStyle = `rgba(255, 255, 255, ${s.opacity})`;
         }
+        ctx.fill();
       }
 
       animationId = requestAnimationFrame(draw);
@@ -143,26 +131,22 @@ const ParticleField = () => {
       mouse.x = e.clientX;
       mouse.y = e.clientY;
     };
-    const handleDown = () => { mouse.down = true; };
-    const handleUp = () => { mouse.down = false; };
-    const handleLeave = () => { mouse.x = -1000; mouse.y = -1000; };
+    const handleLeave = () => {
+      mouse.x = -1000;
+      mouse.y = -1000;
+    };
 
     resize();
-    createParticles();
     draw();
 
-    window.addEventListener("resize", () => { resize(); createParticles(); });
+    window.addEventListener("resize", resize);
     window.addEventListener("mousemove", handleMouse);
-    window.addEventListener("mousedown", handleDown);
-    window.addEventListener("mouseup", handleUp);
     document.addEventListener("mouseleave", handleLeave);
 
     return () => {
       cancelAnimationFrame(animationId);
       window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", handleMouse);
-      window.removeEventListener("mousedown", handleDown);
-      window.removeEventListener("mouseup", handleUp);
       document.removeEventListener("mouseleave", handleLeave);
     };
   }, []);
@@ -171,7 +155,6 @@ const ParticleField = () => {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-0"
-      style={{ opacity: 0.7 }}
     />
   );
 };
