@@ -7,7 +7,7 @@ const toolCards = [
   { cls: "compartment-3d glow-3d", label: "TOOLS — 2D / ILLUSTRATION", labelColor: "text-three-d", tools: "Procreate, Adobe Photoshop, Adobe Suite" },
   { cls: "compartment-game glow-game", label: "TOOLS — GAME", labelColor: "text-game", tools: "Unreal Engine, Unity, Godot, Game Maker" },
   { cls: "glass-panel", label: "HARDWARE & TINKERING", labelColor: "text-muted-foreground", tools: "ESP32, Raspberry Pi, 3D Printers, Custom PCB Design" },
-  { cls: "glass-panel", label: "CERTIFICATIONS", labelColor: "text-muted-foreground", tools: "CompTIA Security+" },
+  { cls: "glass-panel", label: "CERTIFICATIONS", labelColor: "text-muted-foreground", tools: "CompTIA Security+, Blockchain Expert (Blockchain Council), NFT Certification of Excellence (Blockchain Council), Small Electronics Engineering Products & Systems, Unreal Engine (ELVTR), Unreal Engine (Epic Games), 3D Design, Computer Hardware, UI/UX (Google & Figma), CAD (AutoDesk), Leadership (Southern Utah University), Leadership (Washington School of World Studies)" },
 ];
 
 const AboutSection = () => {
