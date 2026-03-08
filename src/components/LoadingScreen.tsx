@@ -1,68 +1,237 @@
+import { useRef, useMemo, useEffect, useState } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { motion, AnimatePresence } from "framer-motion";
+import * as THREE from "three";
+
+// Generate particle positions that form text
+function getTextParticles(text: string, count: number): Float32Array {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d")!;
+  canvas.width = 1024;
+  canvas.height = 256;
+
+  ctx.fillStyle = "white";
+  ctx.font = "bold 80px 'Space Grotesk', sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const pixels: [number, number][] = [];
+
+  for (let y = 0; y < canvas.height; y += 2) {
+    for (let x = 0; x < canvas.width; x += 2) {
+      const i = (y * canvas.width + x) * 4;
+      if (imageData.data[i + 3] > 128) {
+        pixels.push([
+          (x - canvas.width / 2) * 0.012,
+          -(y - canvas.height / 2) * 0.012,
+        ]);
+      }
+    }
+  }
+
+  const positions = new Float32Array(count * 3);
+  for (let i = 0; i < count; i++) {
+    if (i < pixels.length) {
+      const idx = Math.floor((i / count) * pixels.length);
+      positions[i * 3] = pixels[idx][0];
+      positions[i * 3 + 1] = pixels[idx][1];
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 0.3;
+    } else {
+      const idx = Math.floor(Math.random() * pixels.length);
+      positions[i * 3] = pixels[idx][0];
+      positions[i * 3 + 1] = pixels[idx][1];
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 0.5;
+    }
+  }
+  return positions;
+}
+
+const PARTICLE_COUNT = 8000;
+
+function ParticleSystem({ progress }: { progress: number }) {
+  const pointsRef = useRef<THREE.Points>(null!);
+  const materialRef = useRef<THREE.ShaderMaterial>(null!);
+
+  const { targetPositions, initialPositions, randomVelocities } = useMemo(() => {
+    const target = getTextParticles("The Eli Design", PARTICLE_COUNT);
+    const initial = new Float32Array(PARTICLE_COUNT * 3);
+    const velocities = new Float32Array(PARTICLE_COUNT * 3);
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      // Start scattered in a sphere
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      const r = 4 + Math.random() * 8;
+      initial[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+      initial[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+      initial[i * 3 + 2] = r * Math.cos(phi);
+
+      velocities[i * 3] = (Math.random() - 0.5) * 0.02;
+      velocities[i * 3 + 1] = (Math.random() - 0.5) * 0.02;
+      velocities[i * 3 + 2] = (Math.random() - 0.5) * 0.02;
+    }
+    return { targetPositions: target, initialPositions: initial, randomVelocities: velocities };
+  }, []);
+
+  const currentPositions = useMemo(() => new Float32Array(PARTICLE_COUNT * 3), []);
+  const sizes = useMemo(() => {
+    const s = new Float32Array(PARTICLE_COUNT);
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      s[i] = Math.random() * 2.5 + 0.5;
+    }
+    return s;
+  }, []);
+
+  const shaderMaterial = useMemo(() => {
+    return new THREE.ShaderMaterial({
+      uniforms: {
+        uTime: { value: 0 },
+        uProgress: { value: 0 },
+        uColor1: { value: new THREE.Color("#ff3333") },
+        uColor2: { value: new THREE.Color("#ff6644") },
+        uColor3: { value: new THREE.Color("#ffffff") },
+        uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) },
+      },
+      vertexShader: `
+        attribute float aSize;
+        uniform float uTime;
+        uniform float uProgress;
+        uniform float uPixelRatio;
+        varying float vAlpha;
+        varying float vColorMix;
+
+        void main() {
+          vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+          float dist = length(position.xy);
+          vAlpha = smoothstep(0.0, 0.3, uProgress) * (0.6 + 0.4 * sin(uTime * 2.0 + dist * 0.5));
+          vColorMix = sin(position.x * 0.3 + uTime) * 0.5 + 0.5;
+          gl_PointSize = aSize * uPixelRatio * (1.0 + 0.3 * sin(uTime * 3.0 + dist)) * (300.0 / -mvPosition.z);
+          gl_Position = projectionMatrix * mvPosition;
+        }
+      `,
+      fragmentShader: `
+        uniform vec3 uColor1;
+        uniform vec3 uColor2;
+        uniform vec3 uColor3;
+        varying float vAlpha;
+        varying float vColorMix;
+
+        void main() {
+          float d = length(gl_PointCoord - vec2(0.5));
+          if (d > 0.5) discard;
+          float alpha = smoothstep(0.5, 0.1, d) * vAlpha;
+          vec3 color = mix(uColor1, uColor2, vColorMix);
+          color = mix(color, uColor3, smoothstep(0.7, 1.0, vColorMix));
+          // Glow core
+          float glow = exp(-d * 6.0) * 0.5;
+          gl_FragColor = vec4(color + glow, alpha);
+        }
+      `,
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    });
+  }, []);
+
+  useFrame(({ clock }) => {
+    const t = clock.getElapsedTime();
+    const p = Math.min(progress, 1);
+    const ease = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+
+    const geo = pointsRef.current.geometry;
+    const posAttr = geo.attributes.position as THREE.BufferAttribute;
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      const i3 = i * 3;
+      // Lerp from initial scattered positions to text positions
+      currentPositions[i3] = THREE.MathUtils.lerp(initialPositions[i3], targetPositions[i3], ease)
+        + Math.sin(t * 1.5 + i * 0.01) * (1 - ease) * 0.3
+        + randomVelocities[i3] * Math.sin(t + i) * (1 - ease * 0.8);
+      currentPositions[i3 + 1] = THREE.MathUtils.lerp(initialPositions[i3 + 1], targetPositions[i3 + 1], ease)
+        + Math.cos(t * 1.2 + i * 0.01) * (1 - ease) * 0.3
+        + randomVelocities[i3 + 1] * Math.cos(t + i) * (1 - ease * 0.8);
+      currentPositions[i3 + 2] = THREE.MathUtils.lerp(initialPositions[i3 + 2], targetPositions[i3 + 2], ease)
+        + Math.sin(t * 0.8 + i * 0.02) * 0.05;
+    }
+
+    posAttr.array.set(currentPositions);
+    posAttr.needsUpdate = true;
+
+    shaderMaterial.uniforms.uTime.value = t;
+    shaderMaterial.uniforms.uProgress.value = p;
+  });
+
+  return (
+    <points ref={pointsRef} material={shaderMaterial}>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          count={PARTICLE_COUNT}
+          array={initialPositions.slice()}
+          itemSize={3}
+        />
+        <bufferAttribute
+          attach="attributes-aSize"
+          count={PARTICLE_COUNT}
+          array={sizes}
+          itemSize={1}
+        />
+      </bufferGeometry>
+    </points>
+  );
+}
 
 interface LoadingScreenProps {
   isLoading: boolean;
 }
 
 const LoadingScreen = ({ isLoading }: LoadingScreenProps) => {
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    if (!isLoading) return;
+    const start = Date.now();
+    const duration = 1400;
+    const tick = () => {
+      const elapsed = Date.now() - start;
+      const p = Math.min(elapsed / duration, 1);
+      setProgress(p);
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }, [isLoading]);
+
   return (
     <AnimatePresence>
       {isLoading && (
         <motion.div
-          className="fixed inset-0 z-[100] flex items-center justify-center"
+          className="fixed inset-0 z-[100]"
           style={{ background: "hsl(var(--background))" }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+          transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
         >
-          <div className="flex flex-col items-center gap-6">
-            {/* Logo text */}
-            <div className="overflow-hidden">
-              <motion.h1
-                className="font-display text-4xl md:text-5xl font-bold tracking-tight"
-                style={{ color: "hsl(var(--foreground))" }}
-                initial={{ y: "100%" }}
-                animate={{ y: "0%" }}
-                transition={{ duration: 0.8, delay: 0.2, ease: [0.23, 1, 0.32, 1] }}
-              >
-                <span style={{ color: "hsl(var(--foreground) / 0.9)" }}>The Eli</span>{" "}
-                <span
-                  style={{
-                    background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)))",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                  }}
-                >
-                  Design
-                </span>
-              </motion.h1>
-            </div>
+          <Canvas
+            camera={{ position: [0, 0, 10], fov: 50 }}
+            dpr={[1, 2]}
+            style={{ position: "absolute", inset: 0 }}
+          >
+            <ParticleSystem progress={progress} />
+          </Canvas>
 
-            {/* Underline */}
-            <motion.div
-              className="h-px w-0"
-              style={{ background: "linear-gradient(90deg, transparent, hsl(var(--primary)), transparent)" }}
-              animate={{ width: 120 }}
-              transition={{ duration: 1, delay: 0.6, ease: [0.23, 1, 0.32, 1] }}
-            />
-
-            {/* Loading dots */}
-            <div className="flex gap-1.5 mt-2">
-              {[0, 1, 2].map((i) => (
-                <motion.div
-                  key={i}
-                  className="w-1 h-1 rounded-full"
-                  style={{ background: "hsl(var(--primary))" }}
-                  initial={{ opacity: 0.2 }}
-                  animate={{ opacity: [0.2, 1, 0.2] }}
-                  transition={{
-                    duration: 1.2,
-                    repeat: Infinity,
-                    delay: i * 0.2,
-                    ease: "easeInOut",
-                  }}
-                />
-              ))}
-            </div>
+          {/* Subtle loading indicator */}
+          <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex gap-1.5">
+            {[0, 1, 2].map((i) => (
+              <motion.div
+                key={i}
+                className="w-1 h-1 rounded-full"
+                style={{ background: "hsl(var(--primary))" }}
+                initial={{ opacity: 0.2 }}
+                animate={{ opacity: [0.2, 1, 0.2] }}
+                transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.2, ease: "easeInOut" }}
+              />
+            ))}
           </div>
         </motion.div>
       )}
