@@ -1,7 +1,29 @@
 import { useRef, useMemo, useEffect, useState } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { motion, AnimatePresence } from "framer-motion";
 import * as THREE from "three";
+
+function CameraRig({ progress }: { progress: number }) {
+  const { camera } = useThree();
+
+  useFrame(({ clock }) => {
+    const t = clock.getElapsedTime();
+    const ease = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+    // Slow orbit: circle around the text
+    const orbitRadius = THREE.MathUtils.lerp(1.5, 0.3, ease);
+    const orbitSpeed = 0.25;
+    camera.position.x = Math.sin(t * orbitSpeed) * orbitRadius;
+    camera.position.y = Math.cos(t * orbitSpeed * 0.7) * orbitRadius * 0.5;
+
+    // Slow zoom: pull in from 14 to 9
+    camera.position.z = THREE.MathUtils.lerp(14, 9, ease);
+
+    camera.lookAt(0, 0, 0);
+  });
+
+  return null;
+}
 
 // Generate particle positions that form text
 function getTextParticles(text: string, count: number): Float32Array {
