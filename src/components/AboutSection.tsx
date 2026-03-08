@@ -1,8 +1,7 @@
 import { motion } from "framer-motion";
 
 const toolCards = [
-  { cls: "compartment-ixd glow-ixd", label: "TOOLS — IXD / UX", labelColor: "text-ixd", tools: "Figma, Miro, Mural, Framer, Principle, Adobe XD, ProtoPie, Web Design, SEO, Marketing" },
-  { cls: "compartment-ixd glow-ixd", label: "PROJECT MANAGEMENT", labelColor: "text-ixd", tools: "Jira, Monday, ClickUp, HacknPlan" },
+  { cls: "compartment-ixd glow-ixd", label: "TOOLS — IXD / UX / PM", labelColor: "text-ixd", tools: "Figma, Miro, Mural, Framer, Principle, Adobe XD, ProtoPie, Web Design, SEO, Marketing, Jira, Monday, ClickUp, HacknPlan" },
   { cls: "compartment-3d glow-3d", label: "TOOLS — 3D / VFX / 2D", labelColor: "text-three-d", tools: "Blender, ZBrush, Maya, 3DS Max, Cinema 4D, Substance Painter, Mari, Marmoset Toolbag, Fusion 360, FreeCAD, Houdini, Nuke Studio, Red Giant, Redshift, 3D Printing, Procreate, Adobe Photoshop, Adobe Suite" },
   { cls: "compartment-game glow-game", label: "TOOLS — GAME", labelColor: "text-game", tools: "Unreal Engine, Unity, Godot, Game Maker" },
   { cls: "glass-panel", label: "HARDWARE & TINKERING", labelColor: "text-muted-foreground", tools: "ESP32, Raspberry Pi, 3D Printers, Custom PCB Design" },
