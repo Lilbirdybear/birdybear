@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import heroBg from "@/assets/hero-bg.jpg";
+import Magnetic from "./Magnetic";
 
 const HeroSection = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -9,54 +10,109 @@ const HeroSection = () => {
     offset: ["start start", "end start"],
   });
 
-  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
-  const contentY = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
-  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "40%"]);
+  const contentY = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
+  const opacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.9]);
+  const blur = useTransform(scrollYProgress, [0, 0.8], [0, 10]);
+
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const springX = useSpring(mouseX, { stiffness: 50, damping: 20 });
+  const springY = useSpring(mouseY, { stiffness: 50, damping: 20 });
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (!containerRef.current) return;
       const { clientX, clientY } = e;
       const { innerWidth, innerHeight } = window;
-      const xPercent = (clientX / innerWidth - 0.5) * 2;
-      const yPercent = (clientY / innerHeight - 0.5) * 2;
-      containerRef.current.style.setProperty("--rx", `${yPercent * -3}deg`);
-      containerRef.current.style.setProperty("--ry", `${xPercent * 3}deg`);
-      containerRef.current.style.setProperty("--tx", `${xPercent * 8}px`);
-      containerRef.current.style.setProperty("--ty", `${yPercent * 8}px`);
+      mouseX.set((clientX / innerWidth - 0.5) * 30);
+      mouseY.set((clientY / innerHeight - 0.5) * 30);
+
+      containerRef.current.style.setProperty("--mouse-x", `${clientX}px`);
+      containerRef.current.style.setProperty("--mouse-y", `${clientY}px`);
     };
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
+  }, [mouseX, mouseY]);
+
+  const letterVariants = {
+    hidden: { opacity: 0, y: 80, rotateX: 90 },
+    visible: (i: number) => ({
+      opacity: 1,
+      y: 0,
+      rotateX: 0,
+      transition: {
+        delay: 0.5 + i * 0.05,
+        duration: 0.8,
+        ease: [0.23, 1, 0.32, 1],
+      },
+    }),
+  };
+
+  const title = "The Eli";
+  const subtitle = "Design";
 
   return (
-    <section ref={containerRef} className="relative min-h-screen flex items-center justify-center overflow-hidden perspective-container">
-      {/* Background with scroll parallax */}
-      <motion.div className="absolute inset-0" style={{ y: bgY }}>
-        <img src={heroBg} alt="" className="w-full h-full object-cover opacity-40" />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-background/80 to-background" />
+    <section
+      ref={containerRef}
+      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      style={{
+        background: `radial-gradient(circle 600px at var(--mouse-x, 50%) var(--mouse-y, 50%), hsl(var(--primary) / 0.04), transparent)`,
+      }}
+    >
+      {/* Background parallax */}
+      <motion.div className="absolute inset-0" style={{ y: bgY, scale: 1.1 }}>
+        <img src={heroBg} alt="" className="w-full h-full object-cover opacity-30" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/70 to-background" />
       </motion.div>
 
-      {/* Floating orbs */}
+      {/* Animated grid lines */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `
+            linear-gradient(hsl(var(--primary) / 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, hsl(var(--primary) / 0.03) 1px, transparent 1px)
+          `,
+          backgroundSize: "60px 60px",
+        }} />
+      </div>
+
+      {/* Floating gradient orbs */}
       <motion.div
-        className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-primary/5 blur-3xl"
-        animate={{ y: [0, -12, 0], rotateY: [0, 3, 0] }}
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute w-[500px] h-[500px] rounded-full opacity-20"
+        style={{
+          background: "radial-gradient(circle, hsl(var(--primary) / 0.15), transparent 70%)",
+          x: springX,
+          y: springY,
+          left: "20%",
+          top: "20%",
+        }}
       />
       <motion.div
-        className="absolute bottom-1/3 right-1/4 w-48 h-48 rounded-full bg-secondary/5 blur-3xl"
-        animate={{ y: [0, -8, 0], rotateX: [0, 2, 0] }}
-        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute w-[400px] h-[400px] rounded-full opacity-15"
+        style={{
+          background: "radial-gradient(circle, hsl(var(--secondary) / 0.1), transparent 70%)",
+          x: useTransform(springX, v => v * -0.5),
+          y: useTransform(springY, v => v * -0.5),
+          right: "15%",
+          bottom: "20%",
+        }}
       />
       <motion.div
-        className="absolute top-1/2 right-1/3 w-32 h-32 rounded-full bg-accent/5 blur-3xl"
-        animate={{ y: [0, -10, 0] }}
-        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        className="absolute w-[300px] h-[300px] rounded-full opacity-10"
+        style={{
+          background: "radial-gradient(circle, hsl(var(--accent) / 0.1), transparent 70%)",
+          x: useTransform(springX, v => v * 0.3),
+          y: useTransform(springY, v => v * 0.3),
+          right: "30%",
+          top: "40%",
+        }}
       />
 
       {/* Scan line */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="w-full h-px bg-primary/20 animate-scan-line" />
+        <div className="w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent animate-scan-line" />
       </div>
 
       {/* Content */}
@@ -65,79 +121,146 @@ const HeroSection = () => {
         style={{
           y: contentY,
           opacity,
-          transform: "rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateX(var(--tx, 0px)) translateY(var(--ty, 0px))",
-          transition: "transform 0.15s ease-out",
+          scale,
+          filter: useTransform(blur, v => `blur(${v}px)`),
         }}
       >
+        {/* Status badge */}
         <motion.div
-          className="mb-6"
-          initial={{ opacity: 0, y: 30, rotateX: 10 }}
-          animate={{ opacity: 1, y: 0, rotateX: 0 }}
-          transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
-        >
-          <span className="font-mono text-sm tracking-[0.3em] uppercase text-muted-foreground">
-            Design Portfolio
-          </span>
-        </motion.div>
-
-        <motion.h1
-          className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-8"
-          initial={{ opacity: 0, y: 40, rotateX: 15 }}
-          animate={{ opacity: 1, y: 0, rotateX: 0 }}
-          transition={{ delay: 0.4, duration: 0.9, ease: "easeOut" }}
-        >
-          <span className="block text-foreground" style={{ transform: "translateZ(60px)", transformStyle: "preserve-3d" }}>The Eli</span>
-          <span className="block text-foreground/30 text-3xl md:text-4xl lg:text-5xl font-light mt-2" style={{ transform: "translateZ(30px)", transformStyle: "preserve-3d" }}>
-            Design
-          </span>
-        </motion.h1>
-
-        <motion.div
-          className="flex items-center justify-center gap-8 mb-12"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 0.8 }}
-          style={{ transform: "translateZ(20px)", transformStyle: "preserve-3d" }}
-        >
-          <span className="font-mono text-xs tracking-widest text-gradient-ixd">IXD</span>
-          <span className="w-px h-4 bg-border" />
-          <span className="font-mono text-xs tracking-widest text-gradient-3d">3D DESIGN</span>
-          <span className="w-px h-4 bg-border" />
-          <span className="font-mono text-xs tracking-widest text-gradient-game">GAME DESIGN</span>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+          className="mb-10"
+          initial={{ opacity: 0, y: 20, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ delay: 0.8, duration: 0.8, ease: "easeOut" }}
-          style={{ transform: "translateZ(10px)", transformStyle: "preserve-3d" }}
+          transition={{ delay: 0.2, duration: 1, ease: [0.23, 1, 0.32, 1] }}
         >
-          <a
-            href="#compartments"
-            className="inline-flex items-center gap-2 glass-panel px-6 py-3 text-sm font-mono tracking-wider text-foreground hover:border-primary/50 transition-all duration-500 hover:shadow-[0_0_30px_hsl(var(--primary)/0.2)]"
+          <span className="inline-flex items-center gap-2 glass-panel px-4 py-2 text-xs font-mono tracking-[0.3em] uppercase text-muted-foreground border-gradient">
+            <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+            Available for work
+          </span>
+        </motion.div>
+
+        {/* Main title with letter-by-letter animation */}
+        <div className="overflow-hidden mb-2 perspective-container">
+          <motion.h1
+            className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter text-gradient-hero"
+            initial="hidden"
+            animate="visible"
           >
-            EXPLORE COMPARTMENTS
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
-            </svg>
-          </a>
+            {title.split("").map((char, i) => (
+              <motion.span
+                key={i}
+                className="inline-block"
+                custom={i}
+                variants={letterVariants}
+                style={{ transformStyle: "preserve-3d" }}
+              >
+                {char === " " ? "\u00A0" : char}
+              </motion.span>
+            ))}
+          </motion.h1>
+        </div>
+
+        <div className="overflow-hidden mb-10">
+          <motion.p
+            className="text-3xl md:text-5xl lg:text-6xl font-light tracking-tight text-foreground/20"
+            initial="hidden"
+            animate="visible"
+          >
+            {subtitle.split("").map((char, i) => (
+              <motion.span
+                key={i}
+                className="inline-block"
+                custom={i + title.length}
+                variants={letterVariants}
+              >
+                {char === " " ? "\u00A0" : char}
+              </motion.span>
+            ))}
+          </motion.p>
+        </div>
+
+        {/* Discipline tags */}
+        <motion.div
+          className="flex items-center justify-center gap-6 md:gap-10 mb-14"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2, duration: 1 }}
+        >
+          {[
+            { label: "IXD", cls: "text-gradient-ixd" },
+            { label: "3D DESIGN", cls: "text-gradient-3d" },
+            { label: "GAME DESIGN", cls: "text-gradient-game" },
+          ].map((item, i) => (
+            <motion.span
+              key={item.label}
+              className={`font-mono text-[10px] md:text-xs tracking-[0.2em] ${item.cls}`}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.3 + i * 0.15, duration: 0.6 }}
+              whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
+            >
+              {item.label}
+            </motion.span>
+          ))}
+        </motion.div>
+
+        {/* CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.6, duration: 0.8 }}
+        >
+          <Magnetic strength={0.2}>
+            <a
+              href="#compartments"
+              className="group inline-flex items-center gap-3 glass-panel-hover px-8 py-4 text-sm font-mono tracking-wider text-foreground border-gradient cursor-magnetic"
+            >
+              EXPLORE WORK
+              <motion.svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                animate={{ y: [0, 4, 0] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
+              </motion.svg>
+            </a>
+          </Magnetic>
         </motion.div>
       </motion.div>
 
-      {/* Corner markers */}
+      {/* Corner markers with pulse */}
       {[
-        { pos: "top-8 left-8", border: "border-l border-t", delay: 0 },
-        { pos: "top-8 right-8", border: "border-r border-t", delay: 1 },
-        { pos: "bottom-8 left-8", border: "border-l border-b", delay: 2 },
-        { pos: "bottom-8 right-8", border: "border-r border-b", delay: 3 },
+        { pos: "top-6 left-6", border: "border-l-2 border-t-2" },
+        { pos: "top-6 right-6", border: "border-r-2 border-t-2" },
+        { pos: "bottom-6 left-6", border: "border-l-2 border-b-2" },
+        { pos: "bottom-6 right-6", border: "border-r-2 border-b-2" },
       ].map((m, i) => (
         <motion.div
           key={i}
-          className={`absolute ${m.pos} w-8 h-8 ${m.border} border-primary/30`}
-          animate={{ y: [0, -6, 0], x: [0, i % 2 === 0 ? -3 : 3, 0] }}
-          transition={{ duration: 5 + i, repeat: Infinity, ease: "easeInOut", delay: m.delay }}
+          className={`absolute ${m.pos} w-6 h-6 ${m.border} border-primary/20`}
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 1.8 + i * 0.1, duration: 0.5 }}
         />
       ))}
+
+      {/* Scroll indicator */}
+      <motion.div
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 2.2, duration: 1 }}
+      >
+        <span className="font-mono text-[9px] tracking-[0.3em] text-muted-foreground/50 uppercase">Scroll</span>
+        <motion.div
+          className="w-px h-8 bg-gradient-to-b from-primary/50 to-transparent"
+          animate={{ scaleY: [0, 1, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          style={{ transformOrigin: "top" }}
+        />
+      </motion.div>
     </section>
   );
 };
