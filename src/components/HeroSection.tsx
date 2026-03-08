@@ -1,8 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, Suspense } from "react";
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import heroBg from "@/assets/hero-bg.jpg";
 import Magnetic from "./Magnetic";
 import ParticleText from "./ParticleText";
+import LogoCube from "./LogoCube";
 
 const HeroSection = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -132,6 +133,18 @@ const HeroSection = () => {
           transition={{ delay: 0.3, duration: 1.5 }}
         >
           <ParticleText text="The Eli" subtext="Design" className="mb-4" />
+        </motion.div>
+
+        {/* Interactive 3D Logo Cube */}
+        <motion.div
+          className="w-40 h-40 md:w-52 md:h-52 mx-auto mb-8"
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.8, duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
+        >
+          <Suspense fallback={null}>
+            <LogoCube className="w-full h-full" />
+          </Suspense>
         </motion.div>
 
         {/* Discipline tags */}
