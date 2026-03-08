@@ -47,11 +47,11 @@ function CameraRig({ progress }: { progress: number }) {
 function getTextParticles(text: string, count: number): Float32Array {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d")!;
-  canvas.width = 2048;
-  canvas.height = 512;
+  canvas.width = 4096;
+  canvas.height = 1024;
 
   ctx.fillStyle = "white";
-  ctx.font = "bold 160px 'Space Grotesk', sans-serif";
+  ctx.font = "bold 320px 'Space Grotesk', sans-serif";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillText(text, canvas.width / 2, canvas.height / 2);
@@ -59,30 +59,36 @@ function getTextParticles(text: string, count: number): Float32Array {
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
   const pixels: [number, number][] = [];
 
-  // Sample every pixel for maximum text clarity
-  for (let y = 0; y < canvas.height; y += 1) {
-    for (let x = 0; x < canvas.width; x += 1) {
+  // Dense sampling for crisp edges
+  for (let y = 0; y < canvas.height; y += 2) {
+    for (let x = 0; x < canvas.width; x += 2) {
       const i = (y * canvas.width + x) * 4;
       if (imageData.data[i + 3] > 128) {
         pixels.push([
-          (x - canvas.width / 2) * 0.006,
-          -(y - canvas.height / 2) * 0.006,
+          (x - canvas.width / 2) * 0.003,
+          -(y - canvas.height / 2) * 0.003,
         ]);
       }
     }
   }
 
+  // Shuffle pixels for even distribution
+  for (let i = pixels.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pixels[i], pixels[j]] = [pixels[j], pixels[i]];
+  }
+
   const positions = new Float32Array(count * 3);
   for (let i = 0; i < count; i++) {
-    const idx = Math.floor((i / count) * pixels.length);
+    const idx = i % pixels.length;
     positions[i * 3] = pixels[idx][0];
     positions[i * 3 + 1] = pixels[idx][1];
-    positions[i * 3 + 2] = (Math.random() - 0.5) * 0.08;
+    positions[i * 3 + 2] = (Math.random() - 0.5) * 0.03;
   }
   return positions;
 }
 
-const PARTICLE_COUNT = 15000;
+const PARTICLE_COUNT = 22000;
 
 function ParticleSystem({ progress }: { progress: number }) {
   const pointsRef = useRef<THREE.Points>(null!);
