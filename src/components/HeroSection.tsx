@@ -37,22 +37,8 @@ const HeroSection = () => {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [mouseX, mouseY]);
 
-  const letterVariants = {
-    hidden: { opacity: 0, y: 80, rotateX: 90 },
-    visible: (i: number) => ({
-      opacity: 1,
-      y: 0,
-      rotateX: 0,
-      transition: {
-        delay: 0.5 + i * 0.05,
-        duration: 0.8,
-        ease: [0.23, 1, 0.32, 1],
-      },
-    }),
-  };
-
-  const title = "The Eli";
-  const subtitle = "Design";
+  // Accessible h1 for SEO (visually hidden, particle canvas is visual)
+  const title = "The Eli Design";
 
   return (
     <section
