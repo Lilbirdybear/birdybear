@@ -45,7 +45,7 @@ const CursorGlow = () => {
     <>
       {/* Glow blob */}
       <motion.div
-        className="fixed pointer-events-none z-[9999] mix-blend-screen"
+        className="fixed pointer-events-none z-[9999]"
         style={{
           x: springX,
           y: springY,
