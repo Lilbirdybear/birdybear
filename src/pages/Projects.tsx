@@ -12,6 +12,8 @@ import neonImg from "@/assets/projects/neon-descent.jpg";
 import hapticImg from "@/assets/projects/haptic-dashboard.jpg";
 import mechImg from "@/assets/projects/mech-assembly.jpg";
 import phantomImg from "@/assets/projects/phantom-protocol.jpg";
+import modularEmorraImg from "@/assets/projects/modular-emorra.jpg";
+import flybyWinchImg from "@/assets/projects/flyby-winch.jpg";
 
 const fallbackImages: Record<string, string> = {
   "HerWay": herwayImg,
