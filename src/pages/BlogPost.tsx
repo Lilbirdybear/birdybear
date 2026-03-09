@@ -18,7 +18,7 @@ const BlogPost = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-background/80 backdrop-blur-sm flex items-center justify-center">
         <p className="text-muted-foreground font-mono text-sm">Loading...</p>
       </div>
     );
@@ -26,7 +26,7 @@ const BlogPost = () => {
 
   if (!post) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-background/80 backdrop-blur-sm flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-foreground mb-4">Post not found</h1>
           <Link to="/blog" className="text-primary hover:underline font-mono text-sm">← Back to blog</Link>
@@ -36,7 +36,7 @@ const BlogPost = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background/80 backdrop-blur-sm">
       
       <div className="pt-14">
         <motion.article

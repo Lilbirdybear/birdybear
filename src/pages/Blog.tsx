@@ -19,7 +19,7 @@ const Blog = () => {
   });
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background/80 backdrop-blur-sm">
       
       <div className="pt-14">
         <section className="py-32 px-6">
