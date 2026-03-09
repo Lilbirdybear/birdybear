@@ -4,6 +4,26 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import TextReveal from "@/components/TextReveal";
 
+import herwayImg from "@/assets/projects/herway.jpg";
+import echoesImg from "@/assets/projects/echoes-atlantis.jpg";
+import neuralImg from "@/assets/projects/neural-interface.jpg";
+import vertexImg from "@/assets/projects/vertex-creature.jpg";
+import neonImg from "@/assets/projects/neon-descent.jpg";
+import hapticImg from "@/assets/projects/haptic-dashboard.jpg";
+import mechImg from "@/assets/projects/mech-assembly.jpg";
+import phantomImg from "@/assets/projects/phantom-protocol.jpg";
+
+const fallbackImages: Record<string, string> = {
+  "HerWay": herwayImg,
+  "Echoes of Atlantis": echoesImg,
+  "Neural Interface": neuralImg,
+  "Vertex Creature": vertexImg,
+  "Neon Descent": neonImg,
+  "Haptic Dashboard": hapticImg,
+  "Mech Assembly": mechImg,
+  "Phantom Protocol": phantomImg,
+};
+
 type Filter = "all" | "ixd" | "3d" | "game";
 
 const filterConfig: { label: string; value: Filter; color: string }[] = [
