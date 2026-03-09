@@ -138,16 +138,6 @@ const Coin = memo(() => {
         >
           <cylinderGeometry args={[1, 1, 0.2, 48]} />
         </mesh>
-        {/* Rim glow */}
-        <mesh rotation={[Math.PI / 2, 0, 0]} scale={1.04}>
-          <cylinderGeometry args={[1, 1, 0.22, 48]} />
-          <meshBasicMaterial
-            color="#ffffff"
-            transparent
-            opacity={0.03}
-            side={THREE.BackSide}
-          />
-        </mesh>
       </Float>
       <StardustParticles active={hovered} />
     </group>
@@ -159,7 +149,7 @@ Coin.displayName = "Coin";
 const LogoCube = ({ className = "" }: { className?: string }) => (
   <div className={className} style={{ cursor: "grab", width: "100%", height: "100%" }}>
     <Canvas
-      camera={{ position: [0, 0, 3], fov: 50 }}
+      camera={{ position: [0, 0, 2.7], fov: 50 }}
       gl={{ antialias: true, alpha: true, powerPreference: "low-power" }}
       dpr={[1, 1.5]}
       style={{ background: "transparent", width: "100%", height: "100%" }}
