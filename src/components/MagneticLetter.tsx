@@ -68,6 +68,7 @@ const MagneticLetter = ({ char, index }: MagneticLetterProps) => {
     <Magnetic strength={0.6}>
       <motion.span
         className="inline-block relative cursor-none select-none"
+        style={{ perspective: 500, transformStyle: "preserve-3d" }}
         initial={{ opacity: 0, y: 60, filter: "blur(12px)" }}
         animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
         transition={{
