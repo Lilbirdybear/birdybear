@@ -88,6 +88,9 @@ const App = () => {
           <Toaster />
           <Sonner />
 
+          {/* Cursor always visible, outside loading wrapper */}
+          {showEffects && <CursorGlow />}
+
           {/* Pre-render site content behind loading screen — crossfade */}
           <div
             style={{
@@ -101,7 +104,6 @@ const App = () => {
             {showEffects && (
               <>
                 <ParticleField />
-                <CursorGlow />
                 <ScrollProgress />
               </>
             )}
