@@ -1,9 +1,20 @@
 import { useEffect, useRef } from "react";
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import Magnetic from "./Magnetic";
 import MagneticLetter from "./MagneticLetter";
 
 const HeroSection = () => {
+  const { data: settings } = useQuery({
+    queryKey: ["site-settings"],
+    queryFn: async () => {
+      const { data } = await supabase.from("site_settings").select("available_for_work").limit(1).single();
+      return data;
+    },
+  });
+  const available = settings?.available_for_work ?? false;
+
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -91,9 +102,9 @@ const HeroSection = () => {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ delay: 0.3, duration: 1, ease: [0.23, 1, 0.32, 1] }}
         >
-          <span className="inline-flex items-center gap-3 glass-panel px-5 py-2.5 text-[10px] font-mono tracking-[0.35em] uppercase text-muted-foreground border-gradient">
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            Available for work
+          <span className={`inline-flex items-center gap-3 glass-panel px-5 py-2.5 text-[10px] font-mono tracking-[0.35em] uppercase text-muted-foreground border-gradient ${!available ? 'shadow-[0_0_15px_hsl(0_80%_50%/0.15)]' : ''}`}>
+            <span className={`w-2 h-2 rounded-full animate-pulse ${available ? 'bg-primary' : 'bg-destructive'}`} />
+            {available ? "Available for work" : "Not available for work"}
           </span>
         </motion.div>
 
