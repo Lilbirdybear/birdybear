@@ -7,7 +7,6 @@ const LogoCube = lazy(() => import("./LogoCube"));
 
 const navLinks = [
   { label: "Home", href: "/", isHash: false },
-  { label: "Work", href: "/#compartments", isHash: true },
   { label: "Projects", href: "/projects", isHash: false },
   { label: "Blog", href: "/blog", isHash: false },
   { label: "About", href: "/about", isHash: false },

@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 interface CompartmentCardProps {
   title: string;
@@ -101,22 +102,24 @@ const CompartmentCard = ({ title, subtitle, description, image, variant, index }
       <div className="p-6" style={{ transform: "translateZ(30px)", transformStyle: "preserve-3d" }}>
         <h3 className={`text-2xl font-bold mb-3 ${styles.gradient}`}>{title}</h3>
         <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
-        <motion.div
-          className="mt-6 flex items-center gap-2 font-mono text-[10px] tracking-wider text-muted-foreground group-hover:text-foreground transition-all duration-300"
-          whileHover={{ x: 4 }}
-        >
-          <span>VIEW PROJECTS</span>
-          <motion.svg
-            className="w-3 h-3"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            animate={{ x: [0, 3, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+        <Link to="/projects">
+          <motion.div
+            className="mt-6 flex items-center gap-2 font-mono text-[10px] tracking-wider text-muted-foreground group-hover:text-foreground transition-all duration-300"
+            whileHover={{ x: 4 }}
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </motion.svg>
-        </motion.div>
+            <span>VIEW PROJECTS</span>
+            <motion.svg
+              className="w-3 h-3"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              animate={{ x: [0, 3, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </motion.svg>
+          </motion.div>
+        </Link>
       </div>
     </motion.div>
   );
