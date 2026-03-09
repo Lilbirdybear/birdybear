@@ -14,6 +14,11 @@ import mechImg from "@/assets/projects/mech-assembly.jpg";
 import phantomImg from "@/assets/projects/phantom-protocol.jpg";
 import modularEmorraImg from "@/assets/projects/modular-emorra.jpg";
 import flybyWinchImg from "@/assets/projects/flyby-winch.jpg";
+import civicWebImg from "@/assets/projects/civic-web.jpg";
+import arLensImg from "@/assets/projects/ar-lens.jpg";
+import crystalRealmsImg from "@/assets/projects/crystal-realms.jpg";
+import smartHabitatImg from "@/assets/projects/smart-habitat.jpg";
+import synthHandImg from "@/assets/projects/synth-hand.jpg";
 
 const fallbackImages: Record<string, string> = {
   "HerWay": herwayImg,
@@ -26,6 +31,11 @@ const fallbackImages: Record<string, string> = {
   "Phantom Protocol": phantomImg,
   "Modular Emorra": modularEmorraImg,
   "Flyby Mechanical Winch": flybyWinchImg,
+  "Civic Web Redesign": civicWebImg,
+  "AR Lens Prototype": arLensImg,
+  "Crystal Realms": crystalRealmsImg,
+  "Smart Habitat": smartHabitatImg,
+  "Synth Hand": synthHandImg,
 };
 
 type Filter = "all" | "ixd" | "3d" | "game";
