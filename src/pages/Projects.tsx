@@ -554,40 +554,38 @@ const Projects = () => {
           </AnimatePresence>
         </div>
 
-        {/* Back to Table of Contents tab */}
-        <motion.button
-          onClick={() => {
-            const el = document.getElementById("toc-section");
-            if (el) {
-              const top = el.getBoundingClientRect().top + window.scrollY - 112;
-              window.scrollTo({ top, behavior: "smooth" });
-            }
-          }}
-          className="group mx-auto mt-16 flex flex-col items-center gap-3 cursor-magnetic"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+      {/* Floating TOP button */}
+      <motion.button
+        onClick={() => {
+          const el = document.getElementById("toc-section");
+          if (el) {
+            const top = el.getBoundingClientRect().top + window.scrollY - 112;
+            window.scrollTo({ top, behavior: "smooth" });
+          }
+        }}
+        className="fixed bottom-8 right-8 z-50 group flex flex-col items-center gap-2 cursor-magnetic"
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 1, duration: 0.5 }}
+      >
+        <motion.div
+          className="w-10 h-10 rounded-full border border-border flex items-center justify-center backdrop-blur-md bg-background/60 group-hover:border-primary/40 transition-colors duration-300 shadow-lg"
+          animate={{ y: [0, -4, 0] }}
+          transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
         >
-          <motion.div
-            className="w-10 h-10 rounded-full border border-border flex items-center justify-center backdrop-blur-sm bg-background/30 group-hover:border-primary/40 transition-colors duration-300"
-            animate={{ y: [0, -6, 0] }}
-            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+          <svg
+            className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors duration-300 rotate-180"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
           >
-            <svg
-              className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors duration-300 rotate-180"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
-            </svg>
-          </motion.div>
-          <span className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground group-hover:text-primary transition-colors duration-300">
-            TOP
-          </span>
-          <div className="w-px h-8 bg-gradient-to-b from-border to-transparent" />
-        </motion.button>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
+          </svg>
+        </motion.div>
+        <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-muted-foreground group-hover:text-primary transition-colors duration-300">
+          TOP
+        </span>
+      </motion.button>
       </div>
     </div>
   );
