@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -69,8 +69,19 @@ const Projects = () => {
   const [passwordInputs, setPasswordInputs] = useState<Record<string, string>>({});
   const [pendingUnlockId, setPendingUnlockId] = useState<string | null>(null);
   const panelRefs = useRef<Record<string, HTMLDivElement | null>>({});
-  const { scrollYProgress } = useScroll();
-  const topButtonY = useTransform(scrollYProgress, [0, 1], ["90vh", "10vh"]);
+  const [showTopBtn, setShowTopBtn] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const tocEl = document.getElementById("toc-section");
+      if (tocEl) {
+        const tocBottom = tocEl.getBoundingClientRect().bottom;
+        setShowTopBtn(tocBottom < 0);
+      }
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const { data: projects = [] } = useQuery({
     queryKey: ["projects"],
