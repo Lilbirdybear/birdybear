@@ -35,7 +35,8 @@ const HeroSection = () => {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [mouseX, mouseY]);
 
-  const title = "THE ELI DESIGN";
+  const titleLine1 = "THE";
+  const titleLine2 = "ELI DESIGN";
 
   return (
     <section
@@ -97,15 +98,25 @@ const HeroSection = () => {
         </motion.div>
 
         {/* Large title with magnetic letters */}
-        <div className="mb-16 overflow-hidden">
+        <div className="mb-16 overflow-hidden flex flex-col items-center gap-2 md:gap-3">
+          <motion.span
+            className="text-2xl md:text-4xl lg:text-5xl font-bold tracking-[0.3em] leading-none flex items-center justify-center gap-1"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8, duration: 0.6 }}
+          >
+            {titleLine1.split("").map((char, i) => (
+              <MagneticLetter key={i} char={char} index={i} />
+            ))}
+          </motion.span>
           <motion.h1
             className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-none flex flex-wrap items-center justify-center gap-1 md:gap-2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8, duration: 0.6 }}
           >
-            {title.split("").map((char, i) => (
-              <MagneticLetter key={i} char={char} index={i} />
+            {titleLine2.split("").map((char, i) => (
+              <MagneticLetter key={`l2-${i}`} char={char} index={i + titleLine1.length} />
             ))}
           </motion.h1>
         </div>
