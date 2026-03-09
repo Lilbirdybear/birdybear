@@ -88,8 +88,9 @@ const App = () => {
           <Toaster />
           <Sonner />
 
-          {/* Cursor always visible, outside loading wrapper */}
+          {/* Global effects — outside transition wrapper so they never remount */}
           {showEffects && <CursorGlow />}
+          {showEffects && <ParticleField />}
 
           {/* Pre-render site content behind loading screen — crossfade */}
           <div
@@ -101,12 +102,7 @@ const App = () => {
               willChange: isLoading ? "opacity, transform, filter" : "auto",
             }}
           >
-            {showEffects && (
-              <>
-                <ParticleField />
-                <ScrollProgress />
-              </>
-            )}
+            {showEffects && <ScrollProgress />}
             <BrowserRouter>
               <Navbar />
               <AnimatedRoutes />
