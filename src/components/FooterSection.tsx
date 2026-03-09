@@ -1,4 +1,4 @@
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import { useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,12 +16,6 @@ const socialOrder = ["instagram", "artstation", "cara", "linkedin", "github"];
 
 const FooterSection = () => {
   const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end end"],
-  });
-  const y = useTransform(scrollYProgress, [0, 1], [80, 0]);
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [0, 1]);
 
   const { data: settings } = useQuery({
     queryKey: ["site-settings"],
@@ -38,7 +32,11 @@ const FooterSection = () => {
     <motion.footer
       ref={ref}
       className="py-24 px-6 border-t border-border relative overflow-hidden"
-      style={{ y, opacity }}
+      style={{}}
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.8 }}
     >
       {/* Background glow */}
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
