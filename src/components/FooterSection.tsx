@@ -32,7 +32,11 @@ const FooterSection = () => {
     <motion.footer
       ref={ref}
       className="py-24 px-6 border-t border-border relative overflow-hidden"
-      style={{ y, opacity }}
+      style={{}}
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.8 }}
     >
       {/* Background glow */}
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
