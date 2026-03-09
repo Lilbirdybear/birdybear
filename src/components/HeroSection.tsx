@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import Magnetic from "./Magnetic";
+import MagneticLetter from "./MagneticLetter";
 
 const HeroSection = () => {
   const containerRef = useRef<HTMLDivElement>(null);
