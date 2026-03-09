@@ -1,0 +1,1 @@
+ALTER TABLE public.site_settings ADD COLUMN available_for_work boolean NOT NULL DEFAULT false;
