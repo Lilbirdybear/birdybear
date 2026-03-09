@@ -95,14 +95,16 @@ const Projects = () => {
       setExpandedId(id);
     }
 
-    // Give the panel time to render/expand, then scroll
-    setTimeout(() => {
-      const el = panelRefs.current[id];
-      if (el) {
-        const top = el.getBoundingClientRect().top + window.scrollY - 112; // 112px = navbar offset
-        window.scrollTo({ top, behavior: "smooth" });
-      }
-    }, 300);
+    // Use requestAnimationFrame + setTimeout to ensure DOM has updated after state change
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        const el = document.getElementById(`project-panel-${id}`);
+        if (el) {
+          const top = el.getBoundingClientRect().top + window.scrollY - 112;
+          window.scrollTo({ top, behavior: "smooth" });
+        }
+      }, 250);
+    });
   };
 
   const toggleExpand = (id: string) => {
