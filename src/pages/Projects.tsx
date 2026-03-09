@@ -269,6 +269,7 @@ const Projects = () => {
                 <motion.div
                   key={project.id}
                   ref={(el) => { panelRefs.current[project.id] = el; }}
+                  id={`project-panel-${project.id}`}
                   layout
                   initial={{ opacity: 0, y: 60 }}
                   animate={{ opacity: 1, y: 0 }}
