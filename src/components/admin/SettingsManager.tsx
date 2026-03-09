@@ -3,6 +3,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
 const SettingsManager = () => {
@@ -11,6 +13,7 @@ const SettingsManager = () => {
   const [tagline, setTagline] = useState("");
   const [email, setEmail] = useState("");
   const [social, setSocial] = useState({ behance: "", dribbble: "", linkedin: "", github: "" });
+  const [availableForWork, setAvailableForWork] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-settings"],
@@ -28,6 +31,7 @@ const SettingsManager = () => {
       setEmail(data.email || "");
       const sl = (data.social_links || {}) as Record<string, string>;
       setSocial({ behance: sl.behance || "", dribbble: sl.dribbble || "", linkedin: sl.linkedin || "", github: sl.github || "" });
+      setAvailableForWork(data.available_for_work ?? false);
     }
   }, [data]);
 
@@ -35,7 +39,7 @@ const SettingsManager = () => {
     mutationFn: async () => {
       if (!data?.id) return;
       const { error } = await supabase.from("site_settings").update({
-        site_title: siteTitle, tagline, email, social_links: social,
+        site_title: siteTitle, tagline, email, social_links: social, available_for_work: availableForWork,
       }).eq("id", data.id);
       if (error) throw error;
     },
@@ -51,6 +55,12 @@ const SettingsManager = () => {
       <Input placeholder="Site Title" value={siteTitle} onChange={e => setSiteTitle(e.target.value)} className="bg-muted" />
       <Input placeholder="Tagline" value={tagline} onChange={e => setTagline(e.target.value)} className="bg-muted" />
       <Input placeholder="Contact Email" value={email} onChange={e => setEmail(e.target.value)} className="bg-muted" />
+      <div className="flex items-center gap-3 py-2">
+        <Switch id="available-toggle" checked={availableForWork} onCheckedChange={setAvailableForWork} />
+        <Label htmlFor="available-toggle" className="text-sm text-foreground cursor-pointer">
+          {availableForWork ? "Available for Work" : "Not Available for Work"}
+        </Label>
+      </div>
       <div className="space-y-2">
         <label className="text-sm text-muted-foreground">Social Links</label>
         {(["behance", "dribbble", "linkedin", "github"] as const).map(key => (

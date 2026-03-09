@@ -190,6 +190,7 @@ export type Database = {
       }
       site_settings: {
         Row: {
+          available_for_work: boolean
           created_at: string
           email: string | null
           id: string
@@ -199,6 +200,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          available_for_work?: boolean
           created_at?: string
           email?: string | null
           id?: string
@@ -208,6 +210,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          available_for_work?: boolean
           created_at?: string
           email?: string | null
           id?: string
