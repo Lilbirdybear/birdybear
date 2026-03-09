@@ -112,6 +112,7 @@ export type Database = {
       }
       projects: {
         Row: {
+          access_password: string | null
           category: string
           challenge: string | null
           client: string | null
@@ -122,6 +123,7 @@ export type Database = {
           gallery_urls: string[] | null
           id: string
           image_url: string | null
+          is_password_protected: boolean
           outcome: string | null
           published: boolean | null
           role: string | null
@@ -135,6 +137,7 @@ export type Database = {
           year: string
         }
         Insert: {
+          access_password?: string | null
           category: string
           challenge?: string | null
           client?: string | null
@@ -145,6 +148,7 @@ export type Database = {
           gallery_urls?: string[] | null
           id?: string
           image_url?: string | null
+          is_password_protected?: boolean
           outcome?: string | null
           published?: boolean | null
           role?: string | null
@@ -158,6 +162,7 @@ export type Database = {
           year: string
         }
         Update: {
+          access_password?: string | null
           category?: string
           challenge?: string | null
           client?: string | null
@@ -168,6 +173,7 @@ export type Database = {
           gallery_urls?: string[] | null
           id?: string
           image_url?: string | null
+          is_password_protected?: boolean
           outcome?: string | null
           published?: boolean | null
           role?: string | null
