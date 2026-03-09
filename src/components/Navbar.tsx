@@ -181,13 +181,13 @@ const Navbar = () => {
       <AnimatePresence>
         {open && (
           <motion.div
-            className="fixed inset-0 z-40 bg-background/95 backdrop-blur-xl flex items-center justify-center"
+            className="fixed inset-0 z-40 bg-background/95 backdrop-blur-xl flex flex-col items-start justify-start pt-24 px-8"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="flex flex-col items-center gap-8">
+            <div className="flex flex-col items-start gap-6 w-full">
               {navLinks.map((link, i) => (
                 <motion.div
                   key={link.label}
