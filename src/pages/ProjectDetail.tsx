@@ -35,7 +35,7 @@ const ProjectDetail = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-background/80 backdrop-blur-sm flex items-center justify-center">
         <p className="text-muted-foreground font-mono text-sm">Loading...</p>
       </div>
     );
@@ -43,7 +43,7 @@ const ProjectDetail = () => {
 
   if (!project) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-background/80 backdrop-blur-sm flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-foreground mb-4">Project not found</h1>
           <Link to="/" className="text-primary hover:underline font-mono text-sm">← Back home</Link>
@@ -53,7 +53,7 @@ const ProjectDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background/80 backdrop-blur-sm">
       
       <div className="pt-14">
         {/* Hero area */}
