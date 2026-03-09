@@ -248,6 +248,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      verify_project_password: {
+        Args: { _password: string; _project_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin" | "user"
