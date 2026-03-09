@@ -7,7 +7,7 @@ const toolCards = [
   { cls: "compartment-ixd glow-ixd", label: "TOOLS — IXD / UX / PM", labelColor: "text-ixd", tools: ["Figma", "Miro", "Mural", "Framer", "Principle", "Adobe XD", "ProtoPie", "Web Design", "SEO", "Marketing", "Jira", "Monday", "ClickUp", "HacknPlan"] },
   { cls: "compartment-3d glow-3d", label: "TOOLS — 3D / VFX / 2D", labelColor: "text-three-d", tools: ["Blender", "ZBrush", "Maya", "3DS Max", "Cinema 4D", "Substance Painter", "Mari", "Marmoset Toolbag", "Fusion 360", "FreeCAD", "Houdini", "Nuke Studio", "Red Giant", "Redshift", "3D Printing", "Procreate", "Adobe Photoshop", "Adobe Suite"] },
   { cls: "compartment-game glow-game", label: "TOOLS — GAME", labelColor: "text-game", tools: ["Unreal Engine", "Unity", "Godot", "Game Maker"] },
-  { cls: "compartment-ixd glow-ixd", label: "HARDWARE & TINKERING", labelColor: "text-ixd", tools: ["ESP32", "Raspberry Pi", "3D Printers", "Custom PCB Design"] },
+  { cls: "compartment-ixd glow-ixd", label: "HARDWARE & TINKERING", labelColor: "text-ixd", tools: ["ESP32", "Raspberry Pi", "3D Printers", "Custom PCB Design", "Problem Solving", "CAD Design"] },
   { cls: "compartment-game glow-game", label: "CERTIFICATIONS", labelColor: "text-game", tools: ["CompTIA Security+", "Blockchain Expert (Blockchain Council)", "NFT Certification of Excellence (Blockchain Council)", "Small Electronics Engineering Products & Systems", "Unreal Engine (ELVTR)", "Unreal Engine (Epic Games)", "3D Design", "Computer Hardware", "UI/UX (Google & Figma)", "CAD (AutoDesk)", "Leadership (Southern Utah University)", "Leadership (Washington School of World Studies)"] },
 ];
 
