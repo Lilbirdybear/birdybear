@@ -213,6 +213,7 @@ const Projects = () => {
                         src={project.image_url || fallbackImages[project.title]}
                         alt={project.title}
                         className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-60 group-hover:scale-105 transition-all duration-700"
+                        style={project.title === "HerWay" ? { objectPosition: "65% center" } : undefined}
                       />
                     )}
 
