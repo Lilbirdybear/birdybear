@@ -113,43 +113,70 @@ export type Database = {
       projects: {
         Row: {
           category: string
+          challenge: string | null
+          client: string | null
+          content: string | null
           created_at: string
           description: string | null
+          duration: string | null
+          gallery_urls: string[] | null
           id: string
           image_url: string | null
+          outcome: string | null
           published: boolean | null
+          role: string | null
           slug: string
+          solution: string | null
           sort_order: number | null
           tags: string[] | null
           title: string
+          tools_used: string[] | null
           updated_at: string
           year: string
         }
         Insert: {
           category: string
+          challenge?: string | null
+          client?: string | null
+          content?: string | null
           created_at?: string
           description?: string | null
+          duration?: string | null
+          gallery_urls?: string[] | null
           id?: string
           image_url?: string | null
+          outcome?: string | null
           published?: boolean | null
+          role?: string | null
           slug: string
+          solution?: string | null
           sort_order?: number | null
           tags?: string[] | null
           title: string
+          tools_used?: string[] | null
           updated_at?: string
           year: string
         }
         Update: {
           category?: string
+          challenge?: string | null
+          client?: string | null
+          content?: string | null
           created_at?: string
           description?: string | null
+          duration?: string | null
+          gallery_urls?: string[] | null
           id?: string
           image_url?: string | null
+          outcome?: string | null
           published?: boolean | null
+          role?: string | null
           slug?: string
+          solution?: string | null
           sort_order?: number | null
           tags?: string[] | null
           title?: string
+          tools_used?: string[] | null
           updated_at?: string
           year?: string
         }
