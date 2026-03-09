@@ -208,9 +208,9 @@ const Projects = () => {
                     className={`w-full relative aspect-square md:aspect-[2/1] overflow-hidden rounded-sm border border-border ${categoryBorder[project.category]} transition-all duration-500 group text-left`}
                   >
                     {/* Background image */}
-                    {project.image_url && (
+                    {(project.image_url || fallbackImages[project.title]) && (
                       <img
-                        src={project.image_url}
+                        src={project.image_url || fallbackImages[project.title]}
                         alt={project.title}
                         className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-60 group-hover:scale-105 transition-all duration-700"
                       />
