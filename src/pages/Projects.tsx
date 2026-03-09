@@ -69,6 +69,8 @@ const Projects = () => {
   const [passwordInputs, setPasswordInputs] = useState<Record<string, string>>({});
   const [pendingUnlockId, setPendingUnlockId] = useState<string | null>(null);
   const panelRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const { scrollYProgress } = useScroll();
+  const topButtonY = useTransform(scrollYProgress, [0, 1], ["90vh", "10vh"]);
 
   const { data: projects = [] } = useQuery({
     queryKey: ["projects"],
