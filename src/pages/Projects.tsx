@@ -272,7 +272,7 @@ const Projects = () => {
         </motion.div>
 
         {/* Large Case Study Panels */}
-        <div className="space-y-16">
+        <div className="space-y-24">
           <AnimatePresence mode="popLayout">
             {filtered.map((project, i) => {
               const isExpanded = expandedId === project.id;
@@ -561,6 +561,43 @@ const Projects = () => {
                       </motion.div>
                     )}
                   </AnimatePresence>
+
+                  {/* Centered TOP button below each panel */}
+                  <div className="flex justify-center mt-10">
+                    <motion.button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const el = document.getElementById("toc-section");
+                        if (el) {
+                          const top = el.getBoundingClientRect().top + window.scrollY - 112;
+                          window.scrollTo({ top, behavior: "smooth" });
+                        }
+                      }}
+                      className="group flex flex-col items-center gap-2 cursor-magnetic"
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      viewport={{ once: true, amount: 0.5 }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      <motion.div
+                        className="w-8 h-8 rounded-full border border-border flex items-center justify-center backdrop-blur-md bg-background/60 group-hover:border-primary/40 transition-colors duration-300"
+                        animate={{ y: [0, -3, 0] }}
+                        transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                      >
+                        <svg
+                          className="w-3 h-3 text-muted-foreground group-hover:text-primary transition-colors duration-300 rotate-180"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </motion.div>
+                      <span className="font-mono text-[8px] tracking-[0.3em] uppercase text-muted-foreground/50 group-hover:text-primary transition-colors duration-300">
+                        TOP
+                      </span>
+                    </motion.button>
+                  </div>
                 </motion.div>
               );
             })}
