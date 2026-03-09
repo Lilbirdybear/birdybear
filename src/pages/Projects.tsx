@@ -1,5 +1,5 @@
-import { useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -69,6 +69,8 @@ const Projects = () => {
   const [passwordInputs, setPasswordInputs] = useState<Record<string, string>>({});
   const [pendingUnlockId, setPendingUnlockId] = useState<string | null>(null);
   const panelRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const { scrollYProgress } = useScroll();
+  const topButtonY = useTransform(scrollYProgress, [0, 1], ["90vh", "10vh"]);
 
   const { data: projects = [] } = useQuery({
     queryKey: ["projects"],
@@ -554,7 +556,7 @@ const Projects = () => {
           </AnimatePresence>
         </div>
 
-      {/* Floating TOP button */}
+      {/* Floating TOP button that moves with scroll */}
       <motion.button
         onClick={() => {
           const el = document.getElementById("toc-section");
@@ -563,15 +565,14 @@ const Projects = () => {
             window.scrollTo({ top, behavior: "smooth" });
           }
         }}
-        className="fixed bottom-8 right-8 z-50 group flex flex-col items-center gap-2 cursor-magnetic"
+        className="fixed right-8 z-50 group flex flex-col items-center gap-2 cursor-magnetic"
+        style={{ top: topButtonY }}
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 1, duration: 0.5 }}
       >
         <motion.div
           className="w-10 h-10 rounded-full border border-border flex items-center justify-center backdrop-blur-md bg-background/60 group-hover:border-primary/40 transition-colors duration-300 shadow-lg"
-          animate={{ y: [0, -4, 0] }}
-          transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
         >
           <svg
             className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors duration-300 rotate-180"
