@@ -59,7 +59,7 @@ const CompartmentsSection = () => {
             // DISCIPLINES
           </motion.span>
           <TextReveal
-            text="Three Compartments"
+            text="Main Disciplines"
             as="h2"
             className="text-3xl md:text-4xl font-bold text-foreground"
             staggerChildren={0.04}
