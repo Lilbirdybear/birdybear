@@ -95,12 +95,14 @@ const Projects = () => {
       setExpandedId(id);
     }
 
-    // Wait for DOM update then smooth scroll
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        panelRefs.current[id]?.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 150);
-    });
+    // Give the panel time to render/expand, then scroll
+    setTimeout(() => {
+      const el = panelRefs.current[id];
+      if (el) {
+        const top = el.getBoundingClientRect().top + window.scrollY - 112; // 112px = navbar offset
+        window.scrollTo({ top, behavior: "smooth" });
+      }
+    }, 300);
   };
 
   const toggleExpand = (id: string) => {
