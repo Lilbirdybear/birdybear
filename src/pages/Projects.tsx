@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -69,8 +69,19 @@ const Projects = () => {
   const [passwordInputs, setPasswordInputs] = useState<Record<string, string>>({});
   const [pendingUnlockId, setPendingUnlockId] = useState<string | null>(null);
   const panelRefs = useRef<Record<string, HTMLDivElement | null>>({});
-  const { scrollYProgress } = useScroll();
-  const topButtonY = useTransform(scrollYProgress, [0, 1], ["90vh", "10vh"]);
+  const [showTopBtn, setShowTopBtn] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const tocEl = document.getElementById("toc-section");
+      if (tocEl) {
+        const tocBottom = tocEl.getBoundingClientRect().bottom;
+        setShowTopBtn(tocBottom < 0);
+      }
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const { data: projects = [] } = useQuery({
     queryKey: ["projects"],
@@ -261,7 +272,7 @@ const Projects = () => {
         </motion.div>
 
         {/* Large Case Study Panels */}
-        <div className="space-y-10">
+        <div className="space-y-16">
           <AnimatePresence mode="popLayout">
             {filtered.map((project, i) => {
               const isExpanded = expandedId === project.id;
@@ -556,37 +567,43 @@ const Projects = () => {
           </AnimatePresence>
         </div>
 
-      {/* Floating TOP button that moves with scroll */}
-      <motion.button
-        onClick={() => {
-          const el = document.getElementById("toc-section");
-          if (el) {
-            const top = el.getBoundingClientRect().top + window.scrollY - 112;
-            window.scrollTo({ top, behavior: "smooth" });
-          }
-        }}
-        className="fixed right-8 z-50 group flex flex-col items-center gap-2 cursor-magnetic"
-        style={{ top: topButtonY }}
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 1, duration: 0.5 }}
-      >
-        <motion.div
-          className="w-10 h-10 rounded-full border border-border flex items-center justify-center backdrop-blur-md bg-background/60 group-hover:border-primary/40 transition-colors duration-300 shadow-lg"
-        >
-          <svg
-            className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors duration-300 rotate-180"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+      {/* Floating TOP button — appears after scrolling past TOC */}
+      <AnimatePresence>
+        {showTopBtn && (
+          <motion.button
+            onClick={() => {
+              const el = document.getElementById("toc-section");
+              if (el) {
+                const top = el.getBoundingClientRect().top + window.scrollY - 112;
+                window.scrollTo({ top, behavior: "smooth" });
+              }
+            }}
+            className="fixed bottom-8 right-8 z-50 group flex flex-col items-center gap-2 cursor-magnetic"
+            initial={{ opacity: 0, y: 20, scale: 0.8 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.8 }}
+            transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
-          </svg>
-        </motion.div>
-        <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-muted-foreground group-hover:text-primary transition-colors duration-300">
-          TOP
-        </span>
-      </motion.button>
+            <motion.div
+              className="w-10 h-10 rounded-full border border-border flex items-center justify-center backdrop-blur-md bg-background/60 group-hover:border-primary/40 transition-colors duration-300 shadow-lg"
+              animate={{ y: [0, -4, 0] }}
+              transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+            >
+              <svg
+                className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors duration-300 rotate-180"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
+              </svg>
+            </motion.div>
+            <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-muted-foreground group-hover:text-primary transition-colors duration-300">
+              TOP
+            </span>
+          </motion.button>
+        )}
+      </AnimatePresence>
       </div>
     </div>
   );
