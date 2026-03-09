@@ -16,12 +16,6 @@ const socialOrder = ["instagram", "artstation", "cara", "linkedin", "github"];
 
 const FooterSection = () => {
   const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end end"],
-  });
-  const y = useTransform(scrollYProgress, [0, 1], [80, 0]);
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [0, 1]);
 
   const { data: settings } = useQuery({
     queryKey: ["site-settings"],
