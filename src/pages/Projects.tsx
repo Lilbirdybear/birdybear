@@ -584,7 +584,7 @@ const Projects = () => {
             </svg>
           </motion.div>
           <span className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground group-hover:text-primary transition-colors duration-300">
-            BACK TO INDEX
+            TOP
           </span>
           <div className="w-px h-8 bg-gradient-to-b from-border to-transparent" />
         </motion.button>
