@@ -7,12 +7,20 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
+const socialFields = [
+  { key: "instagram", label: "Portfolio Instagram" },
+  { key: "artstation", label: "ArtStation" },
+  { key: "cara", label: "Cara" },
+  { key: "linkedin", label: "LinkedIn" },
+  { key: "github", label: "GitHub" },
+];
+
 const SettingsManager = () => {
   const qc = useQueryClient();
   const [siteTitle, setSiteTitle] = useState("");
   const [tagline, setTagline] = useState("");
   const [email, setEmail] = useState("");
-  const [social, setSocial] = useState({ behance: "", dribbble: "", linkedin: "", github: "" });
+  const [social, setSocial] = useState<Record<string, string>>({ instagram: "", artstation: "", cara: "", linkedin: "", github: "" });
   const [availableForWork, setAvailableForWork] = useState(false);
 
   const { data, isLoading } = useQuery({
@@ -30,7 +38,13 @@ const SettingsManager = () => {
       setTagline(data.tagline || "");
       setEmail(data.email || "");
       const sl = (data.social_links || {}) as Record<string, string>;
-      setSocial({ behance: sl.behance || "", dribbble: sl.dribbble || "", linkedin: sl.linkedin || "", github: sl.github || "" });
+      setSocial({
+        instagram: sl.instagram || "",
+        artstation: sl.artstation || "",
+        cara: sl.cara || "",
+        linkedin: sl.linkedin || "",
+        github: sl.github || "",
+      });
       setAvailableForWork(data.available_for_work ?? false);
     }
   }, [data]);
@@ -63,8 +77,14 @@ const SettingsManager = () => {
       </div>
       <div className="space-y-2">
         <label className="text-sm text-muted-foreground">Social Links</label>
-        {(["behance", "dribbble", "linkedin", "github"] as const).map(key => (
-          <Input key={key} placeholder={key.charAt(0).toUpperCase() + key.slice(1) + " URL"} value={social[key]} onChange={e => setSocial({ ...social, [key]: e.target.value })} className="bg-muted" />
+        {socialFields.map(({ key, label }) => (
+          <Input
+            key={key}
+            placeholder={`${label} URL`}
+            value={social[key] || ""}
+            onChange={e => setSocial({ ...social, [key]: e.target.value })}
+            className="bg-muted"
+          />
         ))}
       </div>
       <Button onClick={() => save.mutate()}>Save Settings</Button>
