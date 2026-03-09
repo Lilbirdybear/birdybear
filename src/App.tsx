@@ -19,6 +19,7 @@ import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import ProjectDetail from "./pages/ProjectDetail";
 import Contact from "./pages/Contact";
+import Projects from "./pages/Projects";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -50,6 +51,7 @@ const AnimatedRoutes = () => {
         <Routes location={location}>
           <Route path="/" element={<Index />} />
           <Route path="/about" element={<About />} />
+          <Route path="/projects" element={<Projects />} />
           <Route path="/project/:slug" element={<ProjectDetail />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
