@@ -35,7 +35,8 @@ const HeroSection = () => {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [mouseX, mouseY]);
 
-  const title = "THE ELI DESIGN";
+  const titleLine1 = "THE";
+  const titleLine2 = "ELI DESIGN";
 
   return (
     <section
