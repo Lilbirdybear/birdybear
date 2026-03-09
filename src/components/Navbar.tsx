@@ -82,19 +82,29 @@ const Navbar = () => {
   return (
     <>
       <motion.nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolled
-            ? "glass-panel border-b border-border"
-            : "bg-transparent border-b border-transparent"
-        }`}
+        className="fixed top-0 left-0 right-0 z-50 flex justify-center"
         initial={{ y: -80 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
       >
-        <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
+        <motion.div
+          className="mt-4 mx-4 px-5 h-16 flex items-center justify-between gap-6 rounded-2xl border border-white/[0.06] max-w-5xl w-full"
+          style={{
+            background: "rgba(8, 8, 16, 0.65)",
+            backdropFilter: "blur(20px) saturate(1.4)",
+            WebkitBackdropFilter: "blur(20px) saturate(1.4)",
+            boxShadow: scrolled
+              ? "0 8px 32px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04)"
+              : "0 4px 20px rgba(0,0,0,0.3), 0 1px 4px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.04)",
+          }}
+          animate={{
+            y: scrolled ? 0 : 4,
+          }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+        >
           <Magnetic strength={0.2}>
             <Link to="/" className="flex items-center gap-2 cursor-magnetic group">
-              <div className="w-16 h-16 relative">
+              <div className="w-14 h-14 relative">
                 {cubeReady ? (
                   <Suspense fallback={
                     <span className="font-mono text-lg tracking-[0.15em] text-foreground font-medium flex items-center h-full">
@@ -121,7 +131,6 @@ const Navbar = () => {
 
           {/* Desktop nav with sliding top indicator */}
           <div className="hidden md:flex items-center relative">
-            {/* The sliding indicator line - positioned ABOVE */}
             <motion.div
               className="absolute h-[2px] bg-primary rounded-full"
               style={{ top: 0 }}
@@ -174,7 +183,7 @@ const Navbar = () => {
               transition={{ duration: 0.3 }}
             />
           </button>
-        </div>
+        </motion.div>
       </motion.nav>
 
       {/* Full-screen mobile menu */}
