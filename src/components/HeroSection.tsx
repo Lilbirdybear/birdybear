@@ -34,8 +34,7 @@ const HeroSection = () => {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [mouseX, mouseY]);
 
-  const title = "ELI";
-  const subtitle = "The Eli Design";
+  const title = "THE ELI DESIGN";
 
   return (
     <section
@@ -96,31 +95,33 @@ const HeroSection = () => {
           </span>
         </motion.div>
 
-        {/* Large title - LUXE inspired */}
-        <div className="mb-6 overflow-hidden">
+        {/* Large title with magnetic letters */}
+        <div className="mb-16 overflow-hidden">
           <motion.h1
-            className="text-7xl md:text-9xl lg:text-[12rem] font-bold tracking-tight text-primary leading-none"
-            initial={{ opacity: 0, y: 80, filter: "blur(20px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{
-              delay: 0.8,
-              duration: 1.2,
-              ease: [0.23, 1, 0.32, 1],
-            }}
+            className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-none flex flex-wrap items-center justify-center gap-1 md:gap-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8, duration: 0.6 }}
           >
-            {title}
+            {title.split("").map((char, i) => (
+              <Magnetic key={i} strength={0.4}>
+                <motion.span
+                  className="inline-block text-foreground hover:text-primary transition-colors duration-300 cursor-none"
+                  initial={{ opacity: 0, y: 60, filter: "blur(12px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  transition={{
+                    delay: 0.9 + i * 0.05,
+                    duration: 0.8,
+                    ease: [0.23, 1, 0.32, 1],
+                  }}
+                  whileHover={{ scale: 1.15, color: "hsl(var(--primary))" }}
+                >
+                  {char === " " ? "\u00A0" : char}
+                </motion.span>
+              </Magnetic>
+            ))}
           </motion.h1>
         </div>
-
-        {/* Subtitle */}
-        <motion.p
-          className="font-mono text-sm md:text-base tracking-[0.4em] uppercase text-muted-foreground mb-16"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.2, duration: 0.8 }}
-        >
-          {subtitle}
-        </motion.p>
 
         {/* Discipline tags */}
         <motion.div
