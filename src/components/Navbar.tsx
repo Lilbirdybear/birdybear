@@ -88,7 +88,7 @@ const Navbar = () => {
         transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
       >
         <motion.div
-          className="mt-4 mx-4 px-5 h-16 flex items-center justify-between gap-6 rounded-2xl border border-white/[0.06] max-w-5xl w-full"
+          className="mt-4 mx-4 px-5 h-16 flex items-center justify-between gap-6 border border-white/[0.06] max-w-5xl w-full"
           style={{
             background: "rgba(8, 8, 16, 0.65)",
             backdropFilter: "blur(20px) saturate(1.4)",
@@ -103,8 +103,8 @@ const Navbar = () => {
           transition={{ duration: 0.4, ease: "easeOut" }}
         >
           <Magnetic strength={0.2}>
-            <Link to="/" className="flex items-center gap-2 cursor-magnetic group">
-              <div className="w-14 h-14 relative">
+            <Link to="/" className="flex items-center justify-center cursor-magnetic group">
+              <div className="w-12 h-12 relative flex items-center justify-center">
                 {cubeReady ? (
                   <Suspense fallback={
                     <span className="font-mono text-lg tracking-[0.15em] text-foreground font-medium flex items-center h-full">
