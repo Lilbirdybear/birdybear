@@ -105,21 +105,7 @@ const HeroSection = () => {
             transition={{ delay: 0.8, duration: 0.6 }}
           >
             {title.split("").map((char, i) => (
-              <Magnetic key={i} strength={0.4}>
-                <motion.span
-                  className="inline-block text-foreground hover:text-primary transition-colors duration-300 cursor-none"
-                  initial={{ opacity: 0, y: 60, filter: "blur(12px)" }}
-                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  transition={{
-                    delay: 0.9 + i * 0.05,
-                    duration: 0.8,
-                    ease: [0.23, 1, 0.32, 1],
-                  }}
-                  whileHover={{ scale: 1.15, color: "hsl(var(--primary))" }}
-                >
-                  {char === " " ? "\u00A0" : char}
-                </motion.span>
-              </Magnetic>
+              <MagneticLetter key={i} char={char} index={i} />
             ))}
           </motion.h1>
         </div>
