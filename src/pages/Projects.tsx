@@ -24,6 +24,8 @@ const fallbackImages: Record<string, string> = {
   "Haptic Dashboard": hapticImg,
   "Mech Assembly": mechImg,
   "Phantom Protocol": phantomImg,
+  "Modular Emorra": modularEmorraImg,
+  "Flyby Mechanical Winch": flybyWinchImg,
 };
 
 type Filter = "all" | "ixd" | "3d" | "game";
