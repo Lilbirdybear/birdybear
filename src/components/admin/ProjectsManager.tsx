@@ -87,6 +87,13 @@ const ProjectsManager = () => {
           <Switch checked={editing.published ?? true} onCheckedChange={v => setEditing({ ...editing, published: v })} />
           <span className="text-sm text-muted-foreground">Published</span>
         </div>
+        <div className="flex items-center gap-2">
+          <Switch checked={(editing as any).is_password_protected ?? true} onCheckedChange={v => setEditing({ ...editing, is_password_protected: v } as any)} />
+          <span className="text-sm text-muted-foreground">Password Protected</span>
+        </div>
+        {(editing as any).is_password_protected && (
+          <Input placeholder="Access Password" type="text" value={(editing as any).access_password || ""} onChange={e => setEditing({ ...editing, access_password: e.target.value } as any)} className="bg-muted" />
+        )}
         <div className="flex gap-2">
           <Button onClick={() => upsert.mutate(editing)}>Save</Button>
           <Button variant="outline" onClick={() => setEditing(null)}>Cancel</Button>
