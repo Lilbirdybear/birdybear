@@ -556,7 +556,7 @@ const Projects = () => {
           </AnimatePresence>
         </div>
 
-      {/* Floating TOP button */}
+      {/* Floating TOP button that moves with scroll */}
       <motion.button
         onClick={() => {
           const el = document.getElementById("toc-section");
@@ -565,15 +565,14 @@ const Projects = () => {
             window.scrollTo({ top, behavior: "smooth" });
           }
         }}
-        className="fixed bottom-8 right-8 z-50 group flex flex-col items-center gap-2 cursor-magnetic"
+        className="fixed right-8 z-50 group flex flex-col items-center gap-2 cursor-magnetic"
+        style={{ top: topButtonY }}
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 1, duration: 0.5 }}
       >
         <motion.div
           className="w-10 h-10 rounded-full border border-border flex items-center justify-center backdrop-blur-md bg-background/60 group-hover:border-primary/40 transition-colors duration-300 shadow-lg"
-          animate={{ y: [0, -4, 0] }}
-          transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
         >
           <svg
             className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors duration-300 rotate-180"
