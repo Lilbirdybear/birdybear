@@ -1,6 +1,8 @@
-import { useRef, useState } from "react";
+import { useRef, useState, lazy, Suspense } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+
+const DroidModelViewer = lazy(() => import("./DroidModelViewer"));
 
 interface CompartmentCardProps {
   title: string;
