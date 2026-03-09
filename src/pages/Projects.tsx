@@ -188,7 +188,8 @@ const Projects = () => {
 
         {/* Table of Contents */}
         <motion.div
-          className="mb-20 border border-border rounded-sm overflow-hidden"
+          id="toc-section"
+          className="mb-20 border border-border rounded-sm overflow-hidden scroll-mt-28"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.6 }}
