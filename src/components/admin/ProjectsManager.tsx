@@ -87,6 +87,13 @@ const ProjectsManager = () => {
           <Switch checked={editing.published ?? true} onCheckedChange={v => setEditing({ ...editing, published: v })} />
           <span className="text-sm text-muted-foreground">Published</span>
         </div>
+        <div className="flex items-center gap-2">
+          <Switch checked={(editing as any).is_password_protected ?? true} onCheckedChange={v => setEditing({ ...editing, is_password_protected: v } as any)} />
+          <span className="text-sm text-muted-foreground">Password Protected</span>
+        </div>
+        {(editing as any).is_password_protected && (
+          <Input placeholder="Access Password" type="text" value={(editing as any).access_password || ""} onChange={e => setEditing({ ...editing, access_password: e.target.value } as any)} className="bg-muted" />
+        )}
         <div className="flex gap-2">
           <Button onClick={() => upsert.mutate(editing)}>Save</Button>
           <Button variant="outline" onClick={() => setEditing(null)}>Cancel</Button>
@@ -108,6 +115,8 @@ const ProjectsManager = () => {
               <span className={`w-2 h-2 rounded-full ${p.category === 'ixd' ? 'bg-ixd' : p.category === '3d' ? 'bg-three-d' : 'bg-game'}`} />
               <span className="text-foreground font-medium">{p.title}</span>
               <span className="font-mono text-xs text-muted-foreground">{p.year}</span>
+              {(p as any).is_password_protected && <span className="text-xs text-muted-foreground font-mono">🔒</span>}
+              {!(p as any).is_password_protected && <span className="text-xs text-primary/60 font-mono">PUBLIC</span>}
               {!p.published && <span className="text-xs text-destructive font-mono">DRAFT</span>}
             </div>
             <div className="flex gap-2">
