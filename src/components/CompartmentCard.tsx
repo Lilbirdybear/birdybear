@@ -102,7 +102,7 @@ const CompartmentCard = ({ title, subtitle, description, image, variant, index }
       <div className="p-6" style={{ transform: "translateZ(30px)", transformStyle: "preserve-3d" }}>
         <h3 className={`text-2xl font-bold mb-3 ${styles.gradient}`}>{title}</h3>
         <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
-        <Link to="/projects">
+        <Link to="/projects#toc-section">
           <motion.div
             className="mt-6 flex items-center gap-2 font-mono text-[10px] tracking-wider text-muted-foreground group-hover:text-foreground transition-all duration-300"
             whileHover={{ x: 4 }}
