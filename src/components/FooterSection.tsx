@@ -1,7 +1,18 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import Magnetic from "./Magnetic";
+
+const socialLabels: Record<string, string> = {
+  instagram: "Portfolio Instagram",
+  artstation: "ArtStation",
+  cara: "Cara",
+  linkedin: "LinkedIn",
+  github: "GitHub",
+};
+
+const socialOrder = ["instagram", "artstation", "cara", "linkedin", "github"];
 
 const FooterSection = () => {
   const ref = useRef<HTMLElement>(null);
@@ -11,6 +22,17 @@ const FooterSection = () => {
   });
   const y = useTransform(scrollYProgress, [0, 1], [80, 0]);
   const opacity = useTransform(scrollYProgress, [0, 0.5], [0, 1]);
+
+  const { data: settings } = useQuery({
+    queryKey: ["site-settings"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("site_settings").select("*").limit(1).single();
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const socialLinks = (settings?.social_links || {}) as Record<string, string>;
 
   return (
     <motion.footer
@@ -39,34 +61,38 @@ const FooterSection = () => {
           </motion.h3>
           <Magnetic strength={0.15}>
             <a
-              href="mailto:eli.birdsall@daydreamingknights.com"
+              href={`mailto:${settings?.email || "eli.birdsall@daydreamingknights.com"}`}
               className="inline-block font-mono text-sm md:text-base text-primary hover:text-primary/80 transition-all duration-300 cursor-magnetic border-b border-primary/30 hover:border-primary pb-1"
             >
-              eli.birdsall@daydreamingknights.com
+              {settings?.email || "eli.birdsall@daydreamingknights.com"}
             </a>
           </Magnetic>
         </motion.div>
 
         {/* Social links */}
         <motion.div
-          className="flex justify-center gap-8 mb-16"
+          className="flex justify-center flex-wrap gap-8 mb-16"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.2, duration: 0.6 }}
         >
-          {["Behance", "Dribbble", "LinkedIn", "GitHub"].map((link, i) => (
-            <Magnetic key={link} strength={0.4}>
-              <motion.a
-                href="#"
-                className="group relative font-mono text-xs tracking-wider text-muted-foreground hover:text-foreground transition-colors cursor-magnetic"
-                whileHover={{ scale: 1.1 }}
-              >
-                {link}
-                <span className="absolute bottom-0 left-0 w-0 h-px bg-primary transition-all duration-300 group-hover:w-full" />
-              </motion.a>
-            </Magnetic>
-          ))}
+          {socialOrder
+            .filter((key) => socialLinks[key])
+            .map((key) => (
+              <Magnetic key={key} strength={0.4}>
+                <motion.a
+                  href={socialLinks[key]}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group relative font-mono text-xs tracking-wider text-muted-foreground hover:text-foreground transition-colors cursor-magnetic"
+                  whileHover={{ scale: 1.1 }}
+                >
+                  {socialLabels[key] || key}
+                  <span className="absolute bottom-0 left-0 w-0 h-px bg-primary transition-all duration-300 group-hover:w-full" />
+                </motion.a>
+              </Magnetic>
+            ))}
         </motion.div>
 
         {/* Bottom bar */}
