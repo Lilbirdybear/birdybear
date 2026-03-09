@@ -81,11 +81,29 @@ const MagneticLetter = ({ char, index }: MagneticLetterProps) => {
       >
         <motion.span
           className="inline-block text-foreground"
+          style={{
+            textShadow: isHovered
+              ? [
+                  "0 1px 0 hsl(var(--primary) / 0.4)",
+                  "0 2px 0 hsl(var(--primary) / 0.3)",
+                  "0 3px 0 hsl(var(--primary) / 0.2)",
+                  "0 4px 0 hsl(var(--primary) / 0.1)",
+                  "0 5px 10px rgba(0,0,0,0.4)",
+                  "0 0 20px hsl(var(--primary) / 0.5)",
+                  "0 0 40px hsl(var(--primary) / 0.2)",
+                ].join(", ")
+              : [
+                  "0 1px 0 hsl(var(--foreground) / 0.15)",
+                  "0 2px 0 hsl(var(--foreground) / 0.1)",
+                  "0 3px 0 hsl(var(--foreground) / 0.07)",
+                  "0 4px 0 hsl(var(--foreground) / 0.04)",
+                  "0 5px 10px rgba(0,0,0,0.2)",
+                ].join(", "),
+          }}
           animate={{
             color: isHovered ? "hsl(var(--primary))" : "hsl(var(--foreground))",
-            textShadow: isHovered
-              ? "0 0 20px hsl(var(--primary) / 0.5), 0 0 40px hsl(var(--primary) / 0.2)"
-              : "0 0 0px transparent",
+            rotateX: isHovered ? -8 : 0,
+            rotateY: isHovered ? 5 : 0,
           }}
           transition={{ duration: 0.3 }}
         >
