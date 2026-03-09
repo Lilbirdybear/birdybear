@@ -44,28 +44,34 @@ const DroidModel = () => {
 
 const DroidModelViewer = () => {
   return (
-    <Canvas
-      gl={{ powerPreference: "low-power", antialias: true }}
-      dpr={[1, 1.5]}
-      camera={{ position: [0, 0.5, 3.5], fov: 45 }}
-      style={{ background: "transparent" }}
-    >
-      <ambientLight intensity={0.4} />
-      <directionalLight position={[5, 5, 5]} intensity={1} />
-      <directionalLight position={[-3, -2, -3]} intensity={0.3} color="#6ec8f7" />
-      <pointLight position={[0, 2, 0]} intensity={0.5} color="#a0d8ef" />
-      <Suspense fallback={null}>
-        <DroidModel />
-        <Environment preset="city" />
-      </Suspense>
-      <OrbitControls
-        enableZoom={false}
-        enablePan={false}
-        autoRotate={false}
-        minPolarAngle={Math.PI / 3}
-        maxPolarAngle={Math.PI / 1.5}
-      />
-    </Canvas>
+    <div className="w-full h-full absolute inset-0">
+      <Canvas
+        gl={{ powerPreference: "low-power", antialias: true, alpha: true }}
+        dpr={[1, 2]}
+        camera={{ position: [0, 0.5, 3.5], fov: 45 }}
+        style={{ background: "transparent", touchAction: "pan-y" }}
+        frameloop="always"
+      >
+        <ambientLight intensity={0.4} />
+        <directionalLight position={[5, 5, 5]} intensity={1} />
+        <directionalLight position={[-3, -2, -3]} intensity={0.3} color="#6ec8f7" />
+        <pointLight position={[0, 2, 0]} intensity={0.5} color="#a0d8ef" />
+        <Suspense fallback={null}>
+          <DroidModel />
+          <Environment preset="city" />
+        </Suspense>
+        <OrbitControls
+          enableZoom={false}
+          enablePan={false}
+          autoRotate={false}
+          enableDamping={true}
+          dampingFactor={0.05}
+          rotateSpeed={0.5}
+          minPolarAngle={Math.PI / 3}
+          maxPolarAngle={Math.PI / 1.5}
+        />
+      </Canvas>
+    </div>
   );
 };
 
