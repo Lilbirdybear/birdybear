@@ -87,17 +87,20 @@ const Projects = () => {
 
   const scrollToPanel = (id: string) => {
     const project = projects.find(p => p.id === id);
-    if (project && (project as any).is_password_protected && !unlockedIds.has(id)) {
+    const isLocked = project && (project as any).is_password_protected && !unlockedIds.has(id);
+
+    if (isLocked) {
       setPendingUnlockId(id);
+    } else {
+      setExpandedId(id);
+    }
+
+    // Wait for DOM update then smooth scroll
+    requestAnimationFrame(() => {
       setTimeout(() => {
         panelRefs.current[id]?.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 100);
-      return;
-    }
-    setExpandedId(id);
-    setTimeout(() => {
-      panelRefs.current[id]?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 100);
+      }, 150);
+    });
   };
 
   const toggleExpand = (id: string) => {
