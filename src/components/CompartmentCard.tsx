@@ -82,15 +82,25 @@ const CompartmentCard = ({ title, subtitle, description, image, variant, index }
         }}
       />
 
-      {/* Image */}
+      {/* Image / 3D Viewer */}
       <div className="relative aspect-[4/3] overflow-hidden">
-        <motion.img
-          src={image}
-          alt={title}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-card via-card/50 to-transparent" />
-        <div className="absolute top-4 left-4 flex items-center gap-2">
+        {variant === "3d" ? (
+          <Suspense fallback={
+            <div className="w-full h-full flex items-center justify-center bg-card">
+              <span className="text-muted-foreground text-xs font-mono">Loading 3D...</span>
+            </div>
+          }>
+            <DroidModelViewer />
+          </Suspense>
+        ) : (
+          <motion.img
+            src={image}
+            alt={title}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-card via-card/50 to-transparent pointer-events-none" />
+        <div className="absolute top-4 left-4 flex items-center gap-2 pointer-events-none">
           <motion.div
             className={`w-2 h-2 rounded-full ${styles.dot}`}
             animate={{ scale: [1, 1.2, 1] }}

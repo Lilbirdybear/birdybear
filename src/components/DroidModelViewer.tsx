@@ -1,5 +1,6 @@
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { OrbitControls, Environment } from "@react-three/drei";
+// @ts-ignore
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
 import { useRef, Suspense } from "react";
 import * as THREE from "three";
