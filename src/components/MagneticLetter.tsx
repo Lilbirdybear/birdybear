@@ -90,8 +90,8 @@ const MagneticLetter = ({ char, index }: MagneticLetterProps) => {
                   "0 3px 0 hsl(var(--primary) / 0.2)",
                   "0 4px 0 hsl(var(--primary) / 0.1)",
                   "0 5px 10px rgba(0,0,0,0.4)",
-                  "0 0 20px hsl(var(--primary) / 0.5)",
-                  "0 0 40px hsl(var(--primary) / 0.2)",
+                  "0 0 12px hsl(var(--primary) / 0.65)",
+                  "0 0 30px hsl(var(--primary) / 0.3)",
                 ].join(", ")
               : [
                   "0 1px 0 hsl(var(--foreground) / 0.15)",
