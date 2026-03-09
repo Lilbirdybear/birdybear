@@ -5,7 +5,7 @@ import FooterSection from "@/components/FooterSection";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background scroll-smooth noise-bg">
+    <div className="min-h-screen scroll-smooth noise-bg">
       <HeroSection />
       <CompartmentsSection />
       <div id="projects">
