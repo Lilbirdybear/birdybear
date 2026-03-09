@@ -115,6 +115,8 @@ const ProjectsManager = () => {
               <span className={`w-2 h-2 rounded-full ${p.category === 'ixd' ? 'bg-ixd' : p.category === '3d' ? 'bg-three-d' : 'bg-game'}`} />
               <span className="text-foreground font-medium">{p.title}</span>
               <span className="font-mono text-xs text-muted-foreground">{p.year}</span>
+              {(p as any).is_password_protected && <span className="text-xs text-muted-foreground font-mono">🔒</span>}
+              {!(p as any).is_password_protected && <span className="text-xs text-primary/60 font-mono">PUBLIC</span>}
               {!p.published && <span className="text-xs text-destructive font-mono">DRAFT</span>}
             </div>
             <div className="flex gap-2">
