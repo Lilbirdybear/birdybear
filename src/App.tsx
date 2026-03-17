@@ -9,7 +9,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import ParticleField from "@/components/ParticleField";
 import CursorGlow from "@/components/CursorGlow";
 import ScrollProgress from "@/components/ScrollProgress";
-import LoadingScreen from "@/components/LoadingScreen";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Navbar from "./components/Navbar";
