@@ -65,45 +65,18 @@ const AnimatedRoutes = () => {
 };
 
 const App = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [showEffects, setShowEffects] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 3500);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Stagger heavy effects: mount them 300ms after loading screen starts fading
-  useEffect(() => {
-    if (!isLoading) {
-      const effectsTimer = setTimeout(() => setShowEffects(true), 200);
-      return () => clearTimeout(effectsTimer);
-    }
-  }, [isLoading]);
-
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <TooltipProvider>
-          <LoadingScreen isLoading={isLoading} />
           <Toaster />
           <Sonner />
 
-          {/* Global effects — outside transition wrapper so they never remount */}
-          {showEffects && <CursorGlow />}
-          {showEffects && <ParticleField />}
+          <CursorGlow />
+          <ParticleField />
 
-          {/* Pre-render site content behind loading screen — crossfade */}
-          <div
-            style={{
-              opacity: isLoading ? 0 : 1,
-              transform: isLoading ? "scale(1.02)" : "scale(1)",
-              filter: isLoading ? "blur(4px)" : "blur(0px)",
-              transition: "opacity 2s cubic-bezier(0.23, 1, 0.32, 1) 0.3s, transform 2.2s cubic-bezier(0.23, 1, 0.32, 1) 0.2s, filter 1.8s cubic-bezier(0.23, 1, 0.32, 1) 0.3s",
-              willChange: isLoading ? "opacity, transform, filter" : "auto",
-            }}
-          >
-            {showEffects && <ScrollProgress />}
+          <div>
+            <ScrollProgress />
             <BrowserRouter>
               <Navbar />
               <AnimatedRoutes />
