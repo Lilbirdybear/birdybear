@@ -18,6 +18,8 @@ import BlogPost from "./pages/BlogPost";
 import ProjectDetail from "./pages/ProjectDetail";
 import Contact from "./pages/Contact";
 import Projects from "./pages/Projects";
+import IxdIndex from "./pages/IxdIndex";
+import IxdPage from "./pages/IxdPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
