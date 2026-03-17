@@ -57,6 +57,7 @@ const Admin = () => {
             <TabsTrigger value="settings">Settings</TabsTrigger>
             <TabsTrigger value="files">Files</TabsTrigger>
             <TabsTrigger value="messages">Messages</TabsTrigger>
+            <TabsTrigger value="ixd">IXD</TabsTrigger>
           </TabsList>
           <TabsContent value="projects"><ProjectsManager /></TabsContent>
           <TabsContent value="blog"><BlogManager /></TabsContent>
