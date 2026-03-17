@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,7 +8,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import ParticleField from "@/components/ParticleField";
 import CursorGlow from "@/components/CursorGlow";
 import ScrollProgress from "@/components/ScrollProgress";
-import LoadingScreen from "@/components/LoadingScreen";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Navbar from "./components/Navbar";
@@ -20,6 +18,8 @@ import BlogPost from "./pages/BlogPost";
 import ProjectDetail from "./pages/ProjectDetail";
 import Contact from "./pages/Contact";
 import Projects from "./pages/Projects";
+import IxdIndex from "./pages/IxdIndex";
+import IxdPage from "./pages/IxdPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -56,6 +56,8 @@ const AnimatedRoutes = () => {
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/ixd" element={<IxdIndex />} />
+          <Route path="/ixd/:slug" element={<IxdPage />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="*" element={<NotFound />} />
@@ -66,45 +68,18 @@ const AnimatedRoutes = () => {
 };
 
 const App = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [showEffects, setShowEffects] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 3500);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Stagger heavy effects: mount them 300ms after loading screen starts fading
-  useEffect(() => {
-    if (!isLoading) {
-      const effectsTimer = setTimeout(() => setShowEffects(true), 200);
-      return () => clearTimeout(effectsTimer);
-    }
-  }, [isLoading]);
-
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <TooltipProvider>
-          <LoadingScreen isLoading={isLoading} />
           <Toaster />
           <Sonner />
 
-          {/* Global effects — outside transition wrapper so they never remount */}
-          {showEffects && <CursorGlow />}
-          {showEffects && <ParticleField />}
+          <CursorGlow />
+          <ParticleField />
 
-          {/* Pre-render site content behind loading screen — crossfade */}
-          <div
-            style={{
-              opacity: isLoading ? 0 : 1,
-              transform: isLoading ? "scale(1.02)" : "scale(1)",
-              filter: isLoading ? "blur(4px)" : "blur(0px)",
-              transition: "opacity 2s cubic-bezier(0.23, 1, 0.32, 1) 0.3s, transform 2.2s cubic-bezier(0.23, 1, 0.32, 1) 0.2s, filter 1.8s cubic-bezier(0.23, 1, 0.32, 1) 0.3s",
-              willChange: isLoading ? "opacity, transform, filter" : "auto",
-            }}
-          >
-            {showEffects && <ScrollProgress />}
+          <div>
+            <ScrollProgress />
             <BrowserRouter>
               <Navbar />
               <AnimatedRoutes />

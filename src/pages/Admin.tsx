@@ -9,6 +9,7 @@ import AboutManager from "@/components/admin/AboutManager";
 import SettingsManager from "@/components/admin/SettingsManager";
 import FileManager from "@/components/admin/FileManager";
 import MessagesManager from "@/components/admin/MessagesManager";
+import IxdManager from "@/components/admin/IxdManager";
 
 const Admin = () => {
   const { user, isAdmin, loading, signOut } = useAuth();
@@ -56,6 +57,7 @@ const Admin = () => {
             <TabsTrigger value="settings">Settings</TabsTrigger>
             <TabsTrigger value="files">Files</TabsTrigger>
             <TabsTrigger value="messages">Messages</TabsTrigger>
+            <TabsTrigger value="ixd">IXD</TabsTrigger>
           </TabsList>
           <TabsContent value="projects"><ProjectsManager /></TabsContent>
           <TabsContent value="blog"><BlogManager /></TabsContent>
@@ -63,6 +65,7 @@ const Admin = () => {
           <TabsContent value="settings"><SettingsManager /></TabsContent>
           <TabsContent value="files"><FileManager /></TabsContent>
           <TabsContent value="messages"><MessagesManager /></TabsContent>
+          <TabsContent value="ixd"><IxdManager /></TabsContent>
         </Tabs>
       </div>
     </div>
