@@ -9,6 +9,7 @@ import AboutManager from "@/components/admin/AboutManager";
 import SettingsManager from "@/components/admin/SettingsManager";
 import FileManager from "@/components/admin/FileManager";
 import MessagesManager from "@/components/admin/MessagesManager";
+import IxdManager from "@/components/admin/IxdManager";
 
 const Admin = () => {
   const { user, isAdmin, loading, signOut } = useAuth();
