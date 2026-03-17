@@ -65,6 +65,7 @@ const Admin = () => {
           <TabsContent value="settings"><SettingsManager /></TabsContent>
           <TabsContent value="files"><FileManager /></TabsContent>
           <TabsContent value="messages"><MessagesManager /></TabsContent>
+          <TabsContent value="ixd"><IxdManager /></TabsContent>
         </Tabs>
       </div>
     </div>

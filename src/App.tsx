@@ -56,6 +56,8 @@ const AnimatedRoutes = () => {
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/ixd" element={<IxdIndex />} />
+          <Route path="/ixd/:slug" element={<IxdPage />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="*" element={<NotFound />} />
