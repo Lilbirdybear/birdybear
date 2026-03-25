@@ -59,10 +59,10 @@ const FooterSection = () => {
           </motion.h3>
           <Magnetic strength={0.15}>
             <a
-              href={`mailto:${settings?.email || "eli.birdsall@daydreamingknights.com"}`}
+              href={`mailto:${settings?.email || "eli@theelidesign.com"}`}
               className="inline-block font-mono text-sm md:text-base text-primary hover:text-primary/80 transition-all duration-300 cursor-magnetic border-b border-primary/30 hover:border-primary pb-1"
             >
-              {settings?.email || "eli.birdsall@daydreamingknights.com"}
+              {settings?.email || "eli@theelidesign.com"}
             </a>
           </Magnetic>
         </motion.div>
